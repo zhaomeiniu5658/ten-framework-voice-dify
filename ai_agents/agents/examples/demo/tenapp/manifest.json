@@ -28,6 +28,15 @@
       "path": "../../../ten_packages/extension/azure_tts_python"
     },
     {
+      "path": "../../../ten_packages/extension/bytedance_asr"
+    },
+    {
+      "path": "../../../ten_packages/extension/bytedance_llm_based_asr"
+    },
+    {
+      "path": "../../../ten_packages/extension/bytedance_tts_duplex"
+    },
+    {
       "path": "../../../ten_packages/extension/coze_llm2_python"
     },
     {

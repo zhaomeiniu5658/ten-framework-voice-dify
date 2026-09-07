@@ -6,9 +6,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node scripts/dev-with-warmup.mjs",
     "build": "next build --webpack",
-    "start": "next start",
+    "start": "node scripts/start-standalone.mjs",
     "lint": "next lint",
     "proto": "pbjs -t json-module -w commonjs -o src/protobuf/SttMessage.js src/protobuf/SttMessage.proto"
   },

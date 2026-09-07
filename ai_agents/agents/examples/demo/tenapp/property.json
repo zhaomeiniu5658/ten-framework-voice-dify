@@ -84,7 +84,8 @@
               "addon": "main_cascade_python",
               "extension_group": "control",
               "property": {
-                "greeting": "TEN Agent connected. How can I help you today?"
+                "greeting": "TEN Agent connected. How can I help you today?",
+                "asr_final_debounce_ms": 1600
               }
             },
             {
@@ -278,7 +279,8 @@
               "addon": "main_cascade_python",
               "extension_group": "control",
               "property": {
-                "greeting": "TEN Agent connected. How can I help you today?"
+                "greeting": "TEN Agent connected. How can I help you today?",
+                "asr_final_debounce_ms": 600
               }
             },
             {
@@ -471,7 +473,8 @@
               "addon": "main_cascade_python",
               "extension_group": "control",
               "property": {
-                "greeting": "TEN Agent connected. How can I help you today?"
+                "greeting": "TEN Agent connected. How can I help you today?",
+                "asr_final_debounce_ms": 600
               }
             },
             {
@@ -2220,25 +2223,47 @@
                 "stream_id": 1234,
                 "remote_stream_id": 123,
                 "subscribe_audio": true,
+                "subscribe_audio_samples_per_frame": 3200,
                 "publish_audio": true,
                 "publish_data": true,
-                "enable_agora_asr": false,
-                "agora_asr_vendor_name": "microsoft",
-                "agora_asr_language": "en-US",
-                "agora_asr_vendor_key": "${env:AZURE_STT_KEY|}",
-                "agora_asr_vendor_region": "${env:AZURE_STT_REGION|}",
-                "agora_asr_session_control_file_path": "session_control.conf"
+                "enable_agora_asr": false
               }
             },
             {
               "type": "extension",
               "name": "stt",
-              "addon": "azure_asr_python",
+              "addon": "bytedance_llm_based_asr",
               "extension_group": "stt",
               "property": {
                 "params": {
-                  "key": "${env:AZURE_STT_KEY}",
-                  "region": "${env:AZURE_STT_REGION}"
+                  "api_key": "${env:BYTEDANCE_ASR_API_KEY|}",
+                  "app_key": "${env:BYTEDANCE_ASR_APP_ID}",
+                  "access_key": "${env:BYTEDANCE_ASR_TOKEN}",
+                  "api_url": "${env:BYTEDANCE_ASR_API_URL|wss://openspeech.bytedance.com/api/v3/sauc/bigmodel_async}",
+                  "auth_method": "token",
+                  "resource_id": "${env:BYTEDANCE_ASR_RESOURCE_ID|volc.seedasr.sauc.duration}",
+                  "model_version": "${env:BYTEDANCE_ASR_MODEL_VERSION|400}",
+                  "language": "zh-CN",
+                  "omit_empty_text_results": true,
+                  "mute_pkg_duration_ms": 300,
+                  "audio": {
+                    "format": "pcm",
+                    "codec": "raw",
+                    "rate": 16000,
+                    "bits": 16,
+                    "channel": 1
+                  },
+                  "request": {
+                    "model_name": "bigmodel",
+                    "model_version": "${env:BYTEDANCE_ASR_MODEL_VERSION|400}",
+                    "enable_itn": true,
+                    "enable_punc": true,
+                    "enable_ddc": true,
+                    "show_utterances": true,
+                    "result_type": "single",
+                    "enable_nonstream": true,
+                    "end_window_size": 400
+                  }
                 }
               }
             },
@@ -2250,30 +2275,25 @@
               "property": {
                 "user_id": "User",
                 "api_key": "${env:DIFY_API_KEY}",
-                "base_url": "https://api.dify.ai/v1"
+                "base_url": "http://dify-api-1:5001/v1"
               }
             },
             {
               "type": "extension",
               "name": "tts",
-              "addon": "azure_tts_python",
+              "addon": "bytedance_tts_duplex",
               "extension_group": "tts",
               "property": {
+                "dump": false,
+                "dump_path": "/tmp",
                 "params": {
-                  "subscription": "${env:AZURE_TTS_API_KEY}",
-                  "region": "${env:AZURE_TTS_REGION}",
-                  "speech_recognition_language": "en-US",
-                  "output_format": "Raw16Khz16BitMonoPcm",
-                  "propertys": [
-                    [
-                      "Speech_LogFilename",
-                      "azure_tts_log.txt"
-                    ],
-                    [
-                      "SpeechServiceConnection_SynthVoice",
-                      "en-US-AriaNeural"
-                    ]
-                  ]
+                  "app_id": "${env:BYTEDANCE_TTS_APPID}",
+                  "token": "${env:BYTEDANCE_TTS_TOKEN}",
+                  "resource_id": "${env:BYTEDANCE_TTS_RESOURCE_ID}",
+                  "speaker": "zh_male_baqiqingshu_uranus_bigtts",
+                  "audio_params": {
+                    "sample_rate": 16000
+                  }
                 }
               }
             },
@@ -2283,7 +2303,8 @@
               "addon": "main_cascade_python",
               "extension_group": "control",
               "property": {
-                "greeting": "TEN Agent connected. How can I help you today?"
+                "greeting": "TEN Agent connected. How can I help you today?",
+                "asr_final_debounce_ms": 600
               }
             },
             {
@@ -2301,12 +2322,6 @@
               "property": {
                 "api_key": "${env:WEATHERAPI_API_KEY|}"
               }
-            },
-            {
-              "type": "extension",
-              "name": "streamid_adapter",
-              "addon": "streamid_adapter",
-              "property": {}
             }
           ],
           "connections": [
@@ -2353,7 +2368,7 @@
                   "name": "pcm_frame",
                   "dest": [
                     {
-                      "extension": "streamid_adapter"
+                      "extension": "stt"
                     }
                   ]
                 },
@@ -2372,19 +2387,6 @@
                   "source": [
                     {
                       "extension": "message_collector"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "extension": "streamid_adapter",
-              "audio_frame": [
-                {
-                  "name": "pcm_frame",
-                  "dest": [
-                    {
-                      "extension": "stt"
                     }
                   ]
                 }

@@ -4,3 +4,4 @@ from pydantic import BaseModel
 class MainControlConfig(BaseModel):
     greeting: str = "Hello, I am your AI assistant."
     no_transcript: bool = False
+    asr_final_debounce_ms: int = 1200

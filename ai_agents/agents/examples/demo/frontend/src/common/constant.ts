@@ -43,7 +43,7 @@ export const DEFAULT_COZE_SETTINGS: ICozeSettings = {
 
 export const DEFAULT_DIFY_SETTINGS: IDifySettings = {
   api_key: "",
-  base_url: "https://api.dify.ai/v1",
+  base_url: "http://dify-api-1:5001/v1",
 };
 
 export const DEFAULT_OCEAN_BASE_SETTINGS: IOceanBaseSettings = {
@@ -142,7 +142,7 @@ export const GROUPED_GRAPH_OPTIONS = {
       value: "va_oceanbase_rag",
     },
     {
-      label: "Dify Agent",
+      label: "Dify Chatflow",
       value: "va_dify_azure",
     },
     {

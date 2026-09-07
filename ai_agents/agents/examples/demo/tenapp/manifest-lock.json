@@ -4,8 +4,8 @@
     {
       "type": "system",
       "name": "ten_runtime_go",
-      "version": "0.11.53",
-      "hash": "3c94b14bdf35be8fb5e2d090db3d7fd1f6f8f6cf4c9ab94b15aa04386614e6ef",
+      "version": "0.11.71",
+      "hash": "b6445c50afcd137bbfbe5342458c303adfdc0eabc6ff62401b0049dddf45387c",
       "dependencies": [
         {
           "type": "system",
@@ -22,8 +22,8 @@
     {
       "type": "system",
       "name": "ten_ai_base",
-      "version": "0.7.35",
-      "hash": "c0559982cec45471511446cb7224b945ad614f269c9e0d3c199959bf9ede752f",
+      "version": "0.7.58",
+      "hash": "efc8b5bd5621db1038a9a6468652a045bdf5d64264a99d7cb9e52d226118f429",
       "dependencies": [
         {
           "type": "system",
@@ -56,8 +56,8 @@
     {
       "type": "extension",
       "name": "azure_asr_python",
-      "version": "0.2.4",
-      "hash": "852cc92bc3e6b5189e737713c0a711f36ba539a52bc306397e6a69deaf3cb585",
+      "version": "0.3.3",
+      "hash": "c994ebdb09cdfd8650ee918f5ea8289dc0e23d4b3f51e32e67d96c4c0bcf1d9d",
       "dependencies": [
         {
           "type": "system",
@@ -73,8 +73,8 @@
     {
       "type": "extension",
       "name": "azure_mllm_python",
-      "version": "0.2.0",
-      "hash": "23ada63d4e5d995fe13ecde3b87989b911cc5dcc7a401c70be578e82d156ed05",
+      "version": "0.2.2",
+      "hash": "6d16f1483c69fe2badaee0548d1663315029811a2c46f56ea7c98c46d20049c0",
       "dependencies": [
         {
           "type": "system",
@@ -86,8 +86,8 @@
     {
       "type": "extension",
       "name": "azure_tts_python",
-      "version": "0.3.0",
-      "hash": "2cb8ff4f0927e283c9e9a78cef7f241792f058fbbc7ac5e83e2bf679e9192c07",
+      "version": "0.3.2",
+      "hash": "e7b681a77a3a63d1da6da6c1ac6c9b964166cf7165780fc708ac9932fbeb0634",
       "dependencies": [
         {
           "type": "system",
@@ -102,9 +102,60 @@
     },
     {
       "type": "extension",
+      "name": "bytedance_asr",
+      "version": "0.2.6",
+      "hash": "a42d6bed1d611f84395797951d861bcbfdf14d59162d24251b385a8457aaff6d",
+      "dependencies": [
+        {
+          "type": "system",
+          "name": "ten_runtime_python"
+        },
+        {
+          "type": "system",
+          "name": "ten_ai_base"
+        }
+      ],
+      "path": "../../../ten_packages/extension/bytedance_asr"
+    },
+    {
+      "type": "extension",
+      "name": "bytedance_llm_based_asr",
+      "version": "0.5.4",
+      "hash": "7db0c15e77144d918fdf2351c1b4c27a184495ef1ec0774ddc4214a613cbd1bb",
+      "dependencies": [
+        {
+          "type": "system",
+          "name": "ten_runtime_python"
+        },
+        {
+          "type": "system",
+          "name": "ten_ai_base"
+        }
+      ],
+      "path": "../../../ten_packages/extension/bytedance_llm_based_asr"
+    },
+    {
+      "type": "extension",
+      "name": "bytedance_tts_duplex",
+      "version": "0.4.2",
+      "hash": "7d0454a6a3a371c33be19e8379e9d92381ee1922f47f78cfb696f47d79389ac2",
+      "dependencies": [
+        {
+          "type": "system",
+          "name": "ten_runtime_python"
+        },
+        {
+          "type": "system",
+          "name": "ten_ai_base"
+        }
+      ],
+      "path": "../../../ten_packages/extension/bytedance_tts_duplex"
+    },
+    {
+      "type": "extension",
       "name": "coze_llm2_python",
-      "version": "0.2.0",
-      "hash": "6056efcc889c5cdb85b104d19d97f01f6cd33dc831634d2249b6729fa4340325",
+      "version": "0.2.1",
+      "hash": "75166c983014a6e0143b16e6280ea1a144f0277caf33955497c06d14cf6d630f",
       "dependencies": [
         {
           "type": "system",
@@ -120,8 +171,8 @@
     {
       "type": "extension",
       "name": "dify_llm2_python",
-      "version": "0.2.0",
-      "hash": "2e4e13f3a99d855ffd6715cc830fd65dcfa39bf5a2a8b2e7ffbac938f82d870b",
+      "version": "0.2.1",
+      "hash": "5def073aa3c294c4433f982b45356664c3fab269c1b6e834b1abeb848ebf8a34",
       "dependencies": [
         {
           "type": "system",
@@ -137,8 +188,8 @@
     {
       "type": "extension",
       "name": "gemini_mllm_python",
-      "version": "0.2.0",
-      "hash": "8d37c2526e3f1ddcf57ef39da4c7aea0f9166b87147161de915d3687bbc58a4e",
+      "version": "0.2.1",
+      "hash": "7b072ee85722132fe7a8d06b067236de7473d76ab709d578c72303bd7800b48c",
       "dependencies": [
         {
           "type": "system",
@@ -154,8 +205,8 @@
     {
       "type": "extension",
       "name": "message_collector2",
-      "version": "0.2.0",
-      "hash": "b4cdc75c61ed572952e2f14bdb5c440f993d3a5bf2da6fe5f5cbb1b4d772a837",
+      "version": "0.2.1",
+      "hash": "41071d407402c084aa504675199ad2940672fc135400e92e596ac20b6f75dfbd",
       "dependencies": [
         {
           "type": "system",
@@ -167,8 +218,8 @@
     {
       "type": "extension",
       "name": "oceanbase_powerrag_python",
-      "version": "0.2.0",
-      "hash": "715809da3917aaf851764529b6e99651daea10eb7b8c10316d9be31ee03f5745",
+      "version": "0.2.1",
+      "hash": "ec32892d61740fa8062f6416539246f5b3bcf690ae3c05d40ae681d960d53d09",
       "dependencies": [
         {
           "type": "system",
@@ -184,8 +235,8 @@
     {
       "type": "extension",
       "name": "openai_llm2_python",
-      "version": "0.2.0",
-      "hash": "ad24801cf718276830749bc50d72c5eba969e5d0ae7538ebd6e6d1ad0b414244",
+      "version": "0.2.3",
+      "hash": "83d1c9cb728eeff525ec85cd308f09f07072d7aeb298c78c9aacd1dbb20a54e7",
       "dependencies": [
         {
           "type": "system",
@@ -201,8 +252,8 @@
     {
       "type": "extension",
       "name": "openai_mllm_python",
-      "version": "0.2.0",
-      "hash": "37251262de24cb7c2c4a01a8aa0455dcfa93ed178a2f5cfebe9ffac8d58ec007",
+      "version": "0.2.2",
+      "hash": "4a5dd0f8d1a54afa73d8b5ef9fc25d7b8daea31f1876674f5a0cbfd4f44d925b",
       "dependencies": [
         {
           "type": "system",
@@ -218,8 +269,8 @@
     {
       "type": "extension",
       "name": "streamid_adapter",
-      "version": "0.2.0",
-      "hash": "6df9a1b48a4007339ccbda84ff96a4ed4eb5df498b8fef021ca2302be7c55051",
+      "version": "0.2.1",
+      "hash": "9bd513b0d1032485ada19b7288c77e21ba01d621af91dd671c3bb2fbed36e670",
       "dependencies": [
         {
           "type": "system",
@@ -231,8 +282,8 @@
     {
       "type": "extension",
       "name": "weatherapi_tool_python",
-      "version": "0.1.0",
-      "hash": "372a4ffffd03992ee2e7a50b0fe83d534b4ed49c0d15099fb0c9cf5ea5cc926c",
+      "version": "0.1.1",
+      "hash": "284202626f01d235dab90545413075d91801a24bc7d2b375cb3408ecfc6b7c5d",
       "dependencies": [
         {
           "type": "system",
@@ -244,8 +295,8 @@
     {
       "type": "extension",
       "name": "minimax_tts_websocket_python",
-      "version": "0.4.0",
-      "hash": "8bc3ae28854a5fdcc6a64bde759e80d33b20e0be2df7aa56fa75381b77b38521",
+      "version": "0.4.2",
+      "hash": "4f7b5f857385a6446d5f0ded434098ae73c012f323e9fff1321c64395b418dc1",
       "dependencies": [
         {
           "type": "system",
@@ -261,8 +312,8 @@
     {
       "type": "system",
       "name": "ten_runtime_python",
-      "version": "0.11.53",
-      "hash": "ad3e1810736b06b850428309f807c1356012d277e842c6509b04514306dfc033",
+      "version": "0.11.71",
+      "hash": "ed03142a1367b68777c6861ae3fd2b0581d0600007ac6c4ff3b68c3563c8edd3",
       "dependencies": [
         {
           "type": "system",
@@ -283,8 +334,8 @@
     {
       "type": "system",
       "name": "ten_runtime",
-      "version": "0.11.53",
-      "hash": "d6308ce4c9ab21cc2db7cfac2abbf1fe189335a37a316ace50ba7e7a7b0fd77e",
+      "version": "0.11.71",
+      "hash": "c0f54261b3a41dbea8587dd68d476c09fb7a01aa03b2aa4fa104ab9c67fd9f8d",
       "supports": [
         {
           "os": "linux",
@@ -307,8 +358,8 @@
     {
       "type": "addon_loader",
       "name": "python_addon_loader",
-      "version": "0.11.53",
-      "hash": "d42be6251f71063a15e9c4c1c0d96e75b327099b05715167bf19e55df3400863",
+      "version": "0.11.71",
+      "hash": "eac249ab4fb106ab0017253b60424876e226a358e39a2cd17a063ebb6a2fb123",
       "dependencies": [
         {
           "type": "system",

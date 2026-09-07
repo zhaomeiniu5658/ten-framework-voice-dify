@@ -113,12 +113,12 @@ func (s *HttpServer) handlerList(c *gin.Context) {
 
 func (s *HttpServer) handleGraphs(c *gin.Context) {
 	// read the property.json file and get the graph list from predefined_graphs, return the result as response
-    // for every graph object returned, only keep the name and auto_start fields
-    // Read property.json from tenapp_dir
-    propertyJsonPath := filepath.Join(s.config.TenappDir, "property.json")
-    content, err := os.ReadFile(propertyJsonPath)
+	// for every graph object returned, only keep the name and auto_start fields
+	// Read property.json from tenapp_dir
+	propertyJsonPath := filepath.Join(s.config.TenappDir, "property.json")
+	content, err := os.ReadFile(propertyJsonPath)
 	if err != nil {
-        slog.Error("failed to read property.json file", "err", err, "path", propertyJsonPath, logTag)
+		slog.Error("failed to read property.json file", "err", err, "path", propertyJsonPath, logTag)
 		s.output(c, codeErrReadFileFailed, http.StatusInternalServerError)
 		return
 	}
@@ -303,7 +303,7 @@ func (s *HttpServer) handlerStart(c *gin.Context) {
 	worker.HttpServerPort = req.WorkerHttpServerPort
 	worker.GraphName = req.GraphName // Save graphName in the Worker instance
 
-	if req.QuitTimeoutSeconds > 0 {
+	if req.QuitTimeoutSeconds != 0 {
 		worker.QuitTimeoutSeconds = req.QuitTimeoutSeconds
 	} else {
 		worker.QuitTimeoutSeconds = s.config.WorkerQuitTimeoutSeconds
@@ -913,9 +913,9 @@ func sanitizeChannelName(channelName string) (string, error) {
 
 	// Check for path traversal characters
 	if strings.Contains(channelName, "..") ||
-	   strings.Contains(channelName, "/") ||
-	   strings.Contains(channelName, "\\") ||
-	   strings.Contains(channelName, "\x00") {
+		strings.Contains(channelName, "/") ||
+		strings.Contains(channelName, "\\") ||
+		strings.Contains(channelName, "\x00") {
 		return "", fmt.Errorf("channel name contains invalid characters")
 	}
 

@@ -61,6 +61,18 @@ tasks:
     cmds:
       - bun run dev
 
+  build-frontend-prod:
+    desc: build frontend for production
+    dir: ./frontend
+    cmds:
+      - bun run build
+
+  run-frontend-prod:
+    desc: run frontend in production
+    dir: ./frontend
+    cmds:
+      - PORT=3000 HOSTNAME=0.0.0.0 bun run start
+
   run-api-server:
     desc: run api server
     dir: ../../../server
@@ -72,6 +84,13 @@ tasks:
     deps:
       - task: run-gd-server
       - task: run-frontend
+      - task: run-api-server
+
+  run-prod:
+    desc: run everything with production frontend
+    deps:
+      - task: run-gd-server
+      - task: run-frontend-prod
       - task: run-api-server
 
 

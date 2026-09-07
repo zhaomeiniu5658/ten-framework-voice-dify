@@ -3,6 +3,7 @@
 # ------------------------------
 from dataclasses import dataclass
 import json
+import re
 from typing import AsyncGenerator, Optional
 
 import aiohttp
@@ -17,11 +18,109 @@ from ten_ai_base.struct import (
 from ten_runtime import AsyncTenEnv
 
 
+def _normalize_for_duplicate_check(text: str) -> str:
+    return re.sub(r"[\s*_`#>\-—:：|]+", "", text)
+
+
+def _remove_consecutive_duplicate_sentences(text: str) -> str:
+    pieces = re.findall(r"[^。！？!?]+[。！？!?]?", text)
+    result: list[str] = []
+    last_normalized = ""
+    for piece in pieces:
+        current = piece.strip()
+        if not current:
+            continue
+        normalized = _normalize_for_duplicate_check(current)
+        if normalized and normalized == last_normalized:
+            continue
+        result.append(current)
+        last_normalized = normalized
+    return "".join(result).strip()
+
+
+def _is_evaluation_report(text: str) -> bool:
+    report_markers = [
+        "评价报告",
+        "面试评价",
+        "综合评分",
+        "评分维度",
+        "推荐结论",
+        "候选人基本信息",
+        "AI 面试评价报告",
+        "AI面试评价报告",
+    ]
+    return any(marker in text for marker in report_markers)
+
+
+def _sanitize_interview_answer(text: str) -> str:
+    if _is_evaluation_report(text):
+        return (
+            "我们先不做评价报告，继续面试。"
+            "请用一个具体项目说明你的职责、项目阶段和处理过的关键问题。"
+        )
+
+    text = re.sub(r"[*_`#>\-|]+", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def _sanitize_stream_delta(text: str) -> str:
+    return re.sub(r"[*_`#>\-|]+", "", text)
+
+
+def _strip_thinking_blocks(text: str) -> str:
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
+    text = re.sub(r"<think>.*", "", text, flags=re.DOTALL)
+    text = re.sub(r"</?think>?", "", text, flags=re.IGNORECASE)
+    return text
+
+
+def _visible_delta_from_raw(raw_content: str, streamed_content: str) -> str:
+    visible_content = _strip_thinking_blocks(raw_content)
+    if visible_content.startswith(streamed_content):
+        return visible_content[len(streamed_content) :]
+    return visible_content
+
+
+def _dedupe_repeated_answer(text: str) -> str:
+    stripped = text.strip()
+    if not stripped:
+        return text
+
+    normalized = _normalize_for_duplicate_check(stripped)
+    for split in range(1, len(stripped)):
+        left = stripped[:split].strip()
+        right = stripped[split:].strip()
+        if (
+            left
+            and right
+            and _normalize_for_duplicate_check(left)
+            == _normalize_for_duplicate_check(right)
+        ):
+            return left
+
+    parts = [p for p in stripped.replace("？", "？\n").splitlines() if p]
+    if len(parts) == 2 and _normalize_for_duplicate_check(
+        parts[0]
+    ) == _normalize_for_duplicate_check(parts[1]):
+        return parts[0]
+
+    midpoint = len(normalized) // 2
+    if (
+        len(normalized) % 2 == 0
+        and normalized[:midpoint] == normalized[midpoint:]
+    ):
+        return stripped[: len(stripped) // 2].strip()
+
+    return _remove_consecutive_duplicate_sentences(stripped)
+
+
 @dataclass
 class DifyLLM2Config(BaseModel):
     api_key: str = ""
     base_url: str = "https://api.dify.ai/v1"
     user_id: str = "TenAgent"
+    prompt: str = ""
     # Networking
     connect_timeout_s: float = 15.0
     total_timeout_s: float = 60.0
@@ -53,12 +152,12 @@ class DifyChatClient:
 
     def _headers(self):
         return {
-            "Authorization": f"Bearer {self.config.api_key}",
+            "Authorization": f"Bearer {self.config.api_key.strip()}",
             "Content-Type": "application/json",
         }
 
     def _url(self, path: str) -> str:
-        base = self.config.base_url.rstrip("/")
+        base = self.config.base_url.strip().rstrip("/")
         return f"{base}/{path.lstrip('/')}"
 
     async def get_chat_completions(
@@ -99,6 +198,12 @@ class DifyChatClient:
 
         # NOTE: Dify does not support tool calls in this endpoint; we ignore tools/messages of function types.
         # Keep behavior symmetrical with your OpenAI extension: we only stream assistant text.
+        if self.config.prompt:
+            query_text = (
+                f"{self.config.prompt}\n\n"
+                f"候选人刚才说：{query_text}\n\n"
+                "请按模拟面试官身份继续。"
+            )
 
         payload = {
             "inputs": {},
@@ -115,6 +220,10 @@ class DifyChatClient:
         )
 
         full_content = ""
+        streamed_content = ""
+        response_id = ""
+        created = 0
+        suppress_stream = False
         async with self._session.post(
             self._url("chat-messages"), json=payload, headers=self._headers()
         ) as resp:
@@ -153,19 +262,37 @@ class DifyChatClient:
                             f"[Dify] conversation_id={self._conversation_id}"
                         )
 
-                    delta = evt.get("answer") or ""
+                    answer = evt.get("answer") or ""
+                    if not answer:
+                        continue
+                    if answer.startswith(full_content):
+                        delta = answer[len(full_content) :]
+                        full_content = answer
+                    else:
+                        delta = answer
+                        full_content += delta
                     if not delta:
                         continue
-                    full_content += delta
+                    response_id = str(evt.get("id") or response_id)
+                    created = int(evt.get("created_at") or created)
+                    visible_content = _strip_thinking_blocks(full_content)
+                    if _is_evaluation_report(visible_content):
+                        suppress_stream = True
+                        continue
 
-                    # Stream assistant delta
-                    yield LLMResponseMessageDelta(
-                        response_id=str(evt.get("id") or ""),
-                        role="assistant",
-                        content=full_content,
-                        delta=delta,
-                        created=int(evt.get("created_at") or 0),
+                    visible_delta = _visible_delta_from_raw(
+                        full_content, streamed_content
                     )
+                    sanitized_delta = _sanitize_stream_delta(visible_delta)
+                    if not suppress_stream and sanitized_delta:
+                        streamed_content += sanitized_delta
+                        yield LLMResponseMessageDelta(
+                            response_id=response_id,
+                            role="assistant",
+                            content=streamed_content,
+                            delta=sanitized_delta,
+                            created=created,
+                        )
 
                 elif event_type == "message_end":
                     # Can log metadata; final "DONE" still closes the stream
@@ -177,6 +304,23 @@ class DifyChatClient:
                 elif event_type == "error":
                     msg = evt.get("message") or "unknown provider error"
                     raise RuntimeError(f"Dify stream error: {msg}")
+
+        full_content = _sanitize_interview_answer(
+            _dedupe_repeated_answer(_strip_thinking_blocks(full_content))
+        )
+        normalized_final = _normalize_for_duplicate_check(full_content)
+        normalized_streamed = _normalize_for_duplicate_check(streamed_content)
+        tail_delta = ""
+        if full_content.startswith(streamed_content):
+            tail_delta = full_content[len(streamed_content) :]
+        if full_content and normalized_final != normalized_streamed and tail_delta:
+            yield LLMResponseMessageDelta(
+                response_id=response_id,
+                role="assistant",
+                content=full_content,
+                delta=tail_delta,
+                created=created,
+            )
 
         # Emit the terminal message (even if empty) to mirror OpenAI sample
         yield LLMResponseMessageDone(

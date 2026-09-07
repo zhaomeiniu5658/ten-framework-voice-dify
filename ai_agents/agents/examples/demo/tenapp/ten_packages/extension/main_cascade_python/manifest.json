@@ -32,6 +32,9 @@
         },
         "no_transcript": {
           "type": "bool"
+        },
+        "asr_final_debounce_ms": {
+          "type": "int32"
         }
       }
     }

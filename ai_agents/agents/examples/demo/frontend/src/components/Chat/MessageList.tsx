@@ -57,8 +57,8 @@ export function MessageItem(props: { data: IChatItem }) {
           <p
             className={
               data.data_type === EMessageDataType.REASON
-                ? cn("text-xs", "text-zinc-500")
-                : ""
+                ? cn("whitespace-pre-wrap break-words text-xs text-zinc-500")
+                : "whitespace-pre-wrap break-words leading-relaxed"
             }
           >
             {data.text}

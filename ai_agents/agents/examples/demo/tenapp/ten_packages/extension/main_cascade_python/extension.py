@@ -42,6 +42,9 @@ class MainControlExtension(AsyncExtension):
         self.sentence_fragment: str = ""
         self.turn_id: int = 0
         self.session_id: str = "0"
+        self._pending_user_text: str = ""
+        self._pending_user_stream_id: int | None = None
+        self._pending_user_commit_task: asyncio.Task | None = None
 
     def _current_metadata(self) -> dict:
         return {"session_id": self.session_id, "turn_id": self.turn_id}
@@ -84,14 +87,26 @@ class MainControlExtension(AsyncExtension):
     async def _on_asr_result(self, event: ASRResultEvent):
         self.session_id = event.metadata.get("session_id", "100")
         stream_id = int(self.session_id)
-        if not event.text:
+        text = (event.text or "").strip()
+        if not text:
             return
-        if event.final or len(event.text) > 2:
+        if event.final or len(text) > 2:
             await self._interrupt()
         if event.final:
-            self.turn_id += 1
-            await self.agent.queue_llm_input(event.text)
-        await self._send_transcript("user", event.text, event.final, stream_id)
+            self._pending_user_text = self._merge_user_text(
+                self._pending_user_text, text
+            )
+            self._pending_user_stream_id = stream_id
+            await self._send_transcript(
+                "user", self._pending_user_text, False, stream_id
+            )
+            self._schedule_pending_user_commit()
+            return
+
+        transcript_text = self._merge_user_text(
+            self._pending_user_text, text
+        )
+        await self._send_transcript("user", transcript_text, False, stream_id)
 
     @agent_event_handler(LLMResponseEvent)
     async def _on_llm_response(self, event: LLMResponseEvent):
@@ -121,6 +136,8 @@ class MainControlExtension(AsyncExtension):
     async def on_stop(self, ten_env: AsyncTenEnv):
         ten_env.log_info("[MainControlExtension] on_stop")
         self.stopped = True
+        if self._pending_user_commit_task:
+            self._pending_user_commit_task.cancel()
         await self.agent.stop()
 
     async def on_cmd(self, ten_env: AsyncTenEnv, cmd: Cmd):
@@ -206,6 +223,57 @@ class MainControlExtension(AsyncExtension):
         self.ten_env.log_info(
             f"[MainControlExtension] Sent to TTS: is_final={is_final}, text={text}"
         )
+
+    def _schedule_pending_user_commit(self):
+        if (
+            self._pending_user_commit_task
+            and not self._pending_user_commit_task.done()
+        ):
+            self._pending_user_commit_task.cancel()
+        self._pending_user_commit_task = asyncio.create_task(
+            self._commit_pending_user_input()
+        )
+
+    async def _commit_pending_user_input(self):
+        try:
+            debounce_seconds = max(
+                self.config.asr_final_debounce_ms, 0
+            ) / 1000
+            await asyncio.sleep(debounce_seconds)
+
+            text = self._pending_user_text.strip()
+            stream_id = self._pending_user_stream_id
+            if not text:
+                return
+
+            self._pending_user_text = ""
+            self._pending_user_stream_id = None
+            self.turn_id += 1
+            await self._send_transcript(
+                "user", text, True, stream_id or int(self.session_id)
+            )
+            await self.agent.queue_llm_input(text)
+        except asyncio.CancelledError:
+            raise
+        finally:
+            if self._pending_user_commit_task is asyncio.current_task():
+                self._pending_user_commit_task = None
+
+    def _merge_user_text(self, previous: str, current: str) -> str:
+        previous = previous.strip()
+        current = current.strip()
+        if not previous:
+            return current
+        if not current:
+            return previous
+        if current.startswith(previous):
+            return current
+        if previous.endswith(current):
+            return previous
+
+        needs_space = previous[-1].isascii() and current[0].isascii()
+        separator = " " if needs_space else ""
+        return f"{previous}{separator}{current}"
 
     async def _interrupt(self):
         """

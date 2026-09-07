@@ -78,7 +78,13 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
 
   async createMicrophoneTracks() {
     try {
-      const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+      const audioTrack = await AgoraRTC.createMicrophoneAudioTrack({
+        AEC: true,
+        AGC: true,
+        ANS: true,
+        DTX: true,
+        encoderConfig: "speech_standard",
+      });
       this.localTracks.audioTrack = audioTrack;
     } catch (err) {
       console.error("Failed to create audio track", err);

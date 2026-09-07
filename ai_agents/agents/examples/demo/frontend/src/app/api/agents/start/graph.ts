@@ -6,6 +6,10 @@ const OPENAI_REALTIME_15_MODEL = "gpt-realtime-1.5";
 const OPENAI_REALTIME_MINI_MODEL = "gpt-realtime-mini";
 const MINIMAX_DEFAULT_PROMPT =
   "Provide short, narrative responses in plain text. Keep answers concise and natural. Do not use emoji, markdown formatting, or special decorative characters.";
+const INTERVIEW_AGENT_PROMPT =
+  "你是一个中文模拟面试官，目标是训练候选人的临床项目经理面试表达。当前处于实时语音面试阶段，不要结束面试，不要评分，不要总结，不要输出评价报告、面试报告、推荐结论或 Markdown。除非候选人明确说“结束面试”或“生成报告”，否则每次只问一个问题或做一个简短追问。回复必须简短，最多两句话，不要复述候选人的材料。优先围绕项目经历、关键决策、数据指标、问题定位和行动结果追问。";
+const INTERVIEW_AGENT_GREETING =
+  "你好，我是模拟面试官。我们开始吧，请先用一分钟做个自我介绍。";
 
 export const voiceNameMap: LanguageMap = {
   "zh-CN": {
@@ -341,10 +345,10 @@ export const getGraphProperties = (
         },
       },
       llm: {
-        prompt: prompt,
+        prompt: prompt || "",
       },
       main_control: {
-        greeting: combined_greeting,
+        greeting: INTERVIEW_AGENT_GREETING,
       },
       tts: {
         params: {

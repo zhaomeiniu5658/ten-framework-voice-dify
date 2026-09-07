@@ -29,6 +29,9 @@ export default function RTCCard(props: { className?: string }) {
   const options = useAppSelector((state) => state.global.options);
   const _voiceType = useAppSelector((state) => state.global.voiceType);
   const _selectedGraphId = useAppSelector((state) => state.global.graphName);
+  const roomConnected = useAppSelector((state) => state.global.roomConnected);
+  const agentConnected = useAppSelector((state) => state.global.agentConnected);
+  const agentConnecting = useAppSelector((state) => state.global.agentConnecting);
   const { userId, channel } = options;
   const [videoTrack, setVideoTrack] = React.useState<ICameraVideoTrack>();
   const [audioTrack, setAudioTrack] = React.useState<IMicrophoneAudioTrack>();
@@ -137,7 +140,12 @@ export default function RTCCard(props: { className?: string }) {
             <h2 className="mb-2 font-semibold text-xl">Audio & Video</h2>
             <AgentVoicePresetSelect />
           </div>
-          <AgentView audioTrack={remoteuser?.audioTrack} />
+          <AgentView
+            audioTrack={remoteuser?.audioTrack}
+            roomConnected={roomConnected}
+            agentConnected={agentConnected}
+            agentConnecting={agentConnecting}
+          />
         </div>
 
         {/* -- You */}

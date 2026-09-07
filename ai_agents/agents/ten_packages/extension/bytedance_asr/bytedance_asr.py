@@ -604,11 +604,11 @@ class AsrWsClient:
         return result
 
     def token_auth(self):
-        self.ten_env.log_info(f"token_auth: {self.token}")
+        self.ten_env.log_info("token_auth: <redacted>")
         return {"Authorization": "Bearer; {}".format(self.token)}
 
     def api_key_auth(self):
-        self.ten_env.log_info(f"api_key_auth: {self.api_key}")
+        self.ten_env.log_info("api_key_auth: <redacted>")
         return {"x-api-key": "{}".format(self.api_key)}
 
     def signature_auth(self, data):

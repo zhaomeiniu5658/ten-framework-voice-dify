@@ -24,6 +24,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import {
   setAgentConnected,
+  setAgentConnecting,
   setGlobalSettingsDialog,
   setMobileActiveTab,
 } from "@/store/reducers/global";
@@ -57,6 +58,10 @@ export default function Action(props: { className?: string }) {
     const res: any = await apiPing(channel);
     if (isSuccessCode(res?.code)) {
       dispatch(setAgentConnected(true));
+    } else {
+      dispatch(setAgentConnected(false));
+      dispatch(setAgentConnecting(false));
+      stopPing();
     }
   };
 
@@ -76,14 +81,16 @@ export default function Action(props: { className?: string }) {
         // handle disconnect
         const res = await apiStopService(channel);
         const { code, msg } = res || {};
-        if (!isSuccessCode(code)) {
+        if (!isSuccessCode(code) && code !== "10002") {
           toast.error(`code:${code},msg:${msg}`);
           throw new Error(msg || "Failed to disconnect agent");
         }
         dispatch(setAgentConnected(false));
-        toast.success("Agent disconnected");
+        dispatch(setAgentConnecting(false));
+        toast.success(code === "10002" ? "Agent already disconnected" : "Agent disconnected");
         stopPing();
       } else {
+        dispatch(setAgentConnecting(true));
         // handle connect
         // prepare start service payload
         const startServicePayload: StartRequestConfig = {
@@ -92,7 +99,7 @@ export default function Action(props: { className?: string }) {
           graphName,
           language,
           voiceType,
-          greeting: agentSettings.greeting,
+          greeting: isDifyGraph(graphName) ? undefined : agentSettings.greeting,
           prompt: agentSettings.prompt,
         };
         // check graph ---
@@ -166,6 +173,7 @@ export default function Action(props: { className?: string }) {
           throw new Error(msg);
         }
         dispatch(setAgentConnected(true));
+        dispatch(setAgentConnecting(false));
         toast.success("Agent connected");
         startPing();
       }
@@ -175,6 +183,7 @@ export default function Action(props: { className?: string }) {
         description: (error as Error)?.message,
       });
     } finally {
+      dispatch(setAgentConnecting(false));
       setLoading(false);
     }
   };

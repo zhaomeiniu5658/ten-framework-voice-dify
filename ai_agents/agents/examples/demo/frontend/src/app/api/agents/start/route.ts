@@ -1,6 +1,40 @@
 import axios from "axios";
 import { type NextRequest, NextResponse } from "next/server";
 import { getGraphProperties } from "./graph";
+
+const DEFAULT_DIFY_BASE_URL = "http://dify-api-1:5001/v1";
+const SECRET_KEYS = new Set([
+  "api_key",
+  "token",
+  "secret",
+  "password",
+  "app_certificate",
+]);
+
+function redactForLog(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(redactForLog);
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+        key,
+        SECRET_KEYS.has(key.toLowerCase()) ? "<REDACTED>" : redactForLog(entry),
+      ])
+    );
+  }
+
+  return value;
+}
+
+function normalizeDifyBaseUrl(baseUrl: string | undefined): string {
+  const resolved = (baseUrl || DEFAULT_DIFY_BASE_URL).trim();
+  if (resolved.includes("dify-nginx-1")) {
+    return DEFAULT_DIFY_BASE_URL;
+  }
+
+  return resolved;
+}
 /**
  * Handles the POST request to start an agent.
  *
@@ -9,7 +43,12 @@ import { getGraphProperties } from "./graph";
  */
 export async function POST(request: NextRequest) {
   try {
-    const { AGENT_SERVER_URL } = process.env;
+    const {
+      AGENT_SERVER_URL,
+      DIFY_API_KEY,
+      DIFY_BASE_URL,
+      DIFY_CHATFLOW_API_KEY,
+    } = process.env;
 
     // Check if environment variables are available
     if (!AGENT_SERVER_URL) {
@@ -63,8 +102,25 @@ export async function POST(request: NextRequest) {
       properties.llm.base_url = coze_base_url;
     }
     if (graph_name.includes("dify")) {
-      properties.llm.api_key = dify_api_key;
-      properties.llm.base_url = dify_base_url;
+      const resolvedDifyApiKey =
+        (DIFY_CHATFLOW_API_KEY || dify_api_key || DIFY_API_KEY || "").trim();
+      const resolvedDifyBaseUrl = normalizeDifyBaseUrl(
+        dify_base_url || DIFY_BASE_URL
+      );
+
+      if (!resolvedDifyApiKey) {
+        return NextResponse.json(
+          {
+            code: "1",
+            data: null,
+            msg: "Dify API key is not configured",
+          },
+          { status: 400 }
+        );
+      }
+
+      properties.llm.api_key = resolvedDifyApiKey;
+      properties.llm.base_url = resolvedDifyBaseUrl;
     }
 
     console.log(
@@ -74,7 +130,7 @@ export async function POST(request: NextRequest) {
         user_uid,
         graph_name: normalizedGraphName,
         // Get the graph properties based on the graph name, language, and voice type
-        properties,
+        properties: redactForLog(properties),
       })}`
     );
 
@@ -87,6 +143,7 @@ export async function POST(request: NextRequest) {
       user_uid,
       graph_name: normalizedGraphName,
       character_id,
+      timeout: -1,
       // Get the graph properties based on the graph name, language, and voice type
       properties,
     });

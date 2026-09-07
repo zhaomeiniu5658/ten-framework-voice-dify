@@ -31,6 +31,7 @@ export interface InitialState {
   options: IOptions;
   roomConnected: boolean;
   agentConnected: boolean;
+  agentConnecting: boolean;
   rtmConnected: boolean;
   themeColor: string;
   language: Language;
@@ -54,11 +55,12 @@ const getInitialState = (): InitialState => {
     themeColor: COLOR_LIST[0].active,
     roomConnected: false,
     agentConnected: false,
+    agentConnecting: false,
     rtmConnected: false,
-    language: "en-US",
+    language: "zh-CN",
     voiceType: "male",
     chatItems: [],
-    graphName: "va_openai_azure",
+    graphName: "va_dify_azure",
     agentSettings: DEFAULT_AGENT_SETTINGS,
     cozeSettings: DEFAULT_COZE_SETTINGS,
     difySettings: DEFAULT_DIFY_SETTINGS,
@@ -91,63 +93,58 @@ export const globalSlice = createSlice({
     },
     addChatItem: (state, action: PayloadAction<IChatItem>) => {
       const { userId, text, isFinal, type, time } = action.payload;
-      const LastFinalIndex = state.chatItems.findLastIndex((el) => {
-        return el.userId === userId && el.isFinal;
-      });
-      const LastNonFinalIndex = state.chatItems.findLastIndex((el) => {
-        return el.userId === userId && !el.isFinal;
-      });
-      const LastFinalItem = state.chatItems[LastFinalIndex];
-      const LastNonFinalItem = state.chatItems[LastNonFinalIndex];
-      if (LastFinalItem) {
-        // has last final Item
-        if (time <= LastFinalItem.time) {
-          // discard
-          console.log(
-            "[test] addChatItem, time < last final item, discard!:",
-            text,
-            isFinal,
-            type
-          );
-          return;
-        } else {
-          if (LastNonFinalItem) {
-            console.log(
-              "[test] addChatItem, update last item(none final):",
-              text,
-              isFinal,
-              type
-            );
-            state.chatItems[LastNonFinalIndex] = action.payload;
-          } else {
-            console.log(
-              "[test] addChatItem, add new item:",
-              text,
-              isFinal,
-              type
-            );
-            state.chatItems.push(action.payload);
-          }
+      const normalizedText = text.trim();
+      const recentDuplicate = state.chatItems
+        .slice()
+        .reverse()
+        .find((el) => el.type === type && el.userId === userId);
+      if (
+        normalizedText.length > 0 &&
+        recentDuplicate &&
+        recentDuplicate.text.trim() === normalizedText &&
+        Math.abs(time - recentDuplicate.time) < 8000
+      ) {
+        if (isFinal && !recentDuplicate.isFinal) {
+          recentDuplicate.isFinal = true;
+          recentDuplicate.time = time;
         }
+        return;
+      }
+      const lastSameSpeakerIndex = state.chatItems.findLastIndex((el) => {
+        return el.userId === userId && el.type === type;
+      });
+      const lastSameSpeakerItem = state.chatItems[lastSameSpeakerIndex];
+
+      if (!lastSameSpeakerItem || lastSameSpeakerItem.isFinal) {
+        console.log("[test] addChatItem, add new item:", text, isFinal, type);
+        state.chatItems.push(action.payload);
+      } else if (time >= lastSameSpeakerItem.time) {
+        console.log(
+          "[test] addChatItem, update last item(none final):",
+          text,
+          isFinal,
+          type
+        );
+        state.chatItems[lastSameSpeakerIndex] = action.payload;
       } else {
-        // no last final Item
-        if (LastNonFinalItem) {
-          console.log(
-            "[test] addChatItem, update last item(none final):",
-            text,
-            isFinal,
-            type
-          );
-          state.chatItems[LastNonFinalIndex] = action.payload;
-        } else {
-          console.log("[test] addChatItem, add new item:", text, isFinal, type);
-          state.chatItems.push(action.payload);
-        }
+        console.log(
+          "[test] addChatItem, time < last same speaker item, discard!:",
+          text,
+          isFinal,
+          type
+        );
+        return;
       }
       state.chatItems.sort((a, b) => a.time - b.time);
     },
     setAgentConnected: (state, action: PayloadAction<boolean>) => {
       state.agentConnected = action.payload;
+      if (action.payload) {
+        state.agentConnecting = false;
+      }
+    },
+    setAgentConnecting: (state, action: PayloadAction<boolean>) => {
+      state.agentConnecting = action.payload;
     },
     setLanguage: (state, action: PayloadAction<Language>) => {
       state.language = action.payload;
@@ -222,6 +219,7 @@ export const {
   setOptions,
   setRoomConnected,
   setAgentConnected,
+  setAgentConnecting,
   setRtmConnected,
   setVoiceType,
   addChatItem,

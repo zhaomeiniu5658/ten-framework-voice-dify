@@ -440,16 +440,8 @@ export function CozeSettingsTab(props: {
 }
 
 export const difySettingsFormSchema = z.object({
-  api_key: z
-    .string({
-      message: "API Key is required",
-    })
-    .min(1),
-  base_url: z
-    .string({
-      message: "Base URL is required",
-    })
-    .min(1),
+  api_key: z.string().optional().default(""),
+  base_url: z.string().optional().default(""),
 });
 
 export const isDifyGraph = (graphName: string) => {
