@@ -1,0 +1,13 @@
+version: "3"
+tasks:
+  run:
+    cmds:
+      - bash /app/run-interview.sh
+  api:
+    dir: /app/server
+    cmds:
+      - ./bin/api -tenapp_dir=/app/agents/examples/demo/tenapp
+  frontend:
+    dir: /app/agents/examples/demo/frontend
+    cmds:
+      - bun run start
