@@ -2275,7 +2275,7 @@
               "property": {
                 "user_id": "User",
                 "api_key": "${env:DIFY_API_KEY}",
-                "base_url": "http://dify-api-1:5001/v1"
+                "base_url": "${env:DIFY_BASE_URL|http://dify-api-1:5001/v1}"
               }
             },
             {
@@ -2303,8 +2303,10 @@
               "addon": "main_cascade_python",
               "extension_group": "control",
               "property": {
-                "greeting": "TEN Agent connected. How can I help you today?",
-                "asr_final_debounce_ms": 600
+                "greeting": "我是今天的AI面试官，您准备好了就开始。",
+                "asr_final_debounce_ms": 900,
+                "interrupt_on_partial": false,
+                "report_tts_summary": "谢谢您的配合，本次面试结束。报告已生成，请查看详细结果。"
               }
             },
             {

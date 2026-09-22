@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       const resolvedDifyApiKey =
         (DIFY_CHATFLOW_API_KEY || dify_api_key || DIFY_API_KEY || "").trim();
       const resolvedDifyBaseUrl = normalizeDifyBaseUrl(
-        dify_base_url || DIFY_BASE_URL
+        DIFY_BASE_URL || dify_base_url
       );
 
       if (!resolvedDifyApiKey) {

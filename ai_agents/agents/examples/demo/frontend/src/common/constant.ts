@@ -43,7 +43,7 @@ export const DEFAULT_COZE_SETTINGS: ICozeSettings = {
 
 export const DEFAULT_DIFY_SETTINGS: IDifySettings = {
   api_key: "",
-  base_url: "http://dify-api-1:5001/v1",
+  base_url: "",
 };
 
 export const DEFAULT_OCEAN_BASE_SETTINGS: IOceanBaseSettings = {

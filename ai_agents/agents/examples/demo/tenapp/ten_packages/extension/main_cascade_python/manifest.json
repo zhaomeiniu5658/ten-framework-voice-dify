@@ -35,6 +35,12 @@
         },
         "asr_final_debounce_ms": {
           "type": "int32"
+        },
+        "interrupt_on_partial": {
+          "type": "bool"
+        },
+        "report_tts_summary": {
+          "type": "string"
         }
       }
     }

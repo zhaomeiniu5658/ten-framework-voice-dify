@@ -1,0 +1,25 @@
+services:
+  ten_voice_dify_dev:
+    image: ghcr.io/ten-framework/ten_agent_build:0.7.14
+    platform: linux/amd64
+    tty: true
+    stdin_open: true
+    working_dir: /app/agents/examples/demo
+    env_file:
+      - .env
+    environment:
+      DIFY_BASE_URL: http://host.docker.internal:8081/v1
+      AGENT_SERVER_URL: http://127.0.0.1:8080
+      TEN_DEV_SERVER_URL: http://127.0.0.1:49483
+      SERVER_PORT: "8080"
+      GRAPH_DESIGNER_SERVER_PORT: "49483"
+      LOG_PATH: /tmp/ten_voice_dify
+    ports:
+      - "127.0.0.1:3010:3000"
+      - "127.0.0.1:8082:8080"
+      - "127.0.0.1:49484:49483"
+    volumes:
+      - ./:/app
+      - /tmp/ten_voice_dify:/tmp/ten_voice_dify
+      - ../tools/pylint/.pylintrc:/tools/pylint/.pylintrc:ro
+      - ../tools/upgrade:/tools/upgrade:ro

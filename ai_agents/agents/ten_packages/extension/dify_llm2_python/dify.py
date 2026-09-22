@@ -60,7 +60,10 @@ def _sanitize_interview_answer(text: str) -> str:
         )
 
     text = re.sub(r"[*_`#>\-|]+", "", text)
-    text = re.sub(r"\s+", " ", text).strip()
+    if text.lstrip().startswith("MBTI ") and "报告" in text.split("\n", 1)[0]:
+        text = re.sub(r"[^\S\n]+", " ", text).strip()
+    else:
+        text = re.sub(r"\s+", " ", text).strip()
     return text
 
 
@@ -86,6 +89,8 @@ def _dedupe_repeated_answer(text: str) -> str:
     stripped = text.strip()
     if not stripped:
         return text
+    if stripped.startswith("MBTI ") and "报告" in stripped.split("\n", 1)[0]:
+        return stripped
 
     normalized = _normalize_for_duplicate_check(stripped)
     for split in range(1, len(stripped)):

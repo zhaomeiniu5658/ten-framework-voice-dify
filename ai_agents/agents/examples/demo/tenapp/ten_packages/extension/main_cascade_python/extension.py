@@ -90,7 +90,7 @@ class MainControlExtension(AsyncExtension):
         text = (event.text or "").strip()
         if not text:
             return
-        if event.final or len(text) > 2:
+        if self.config.interrupt_on_partial and (event.final or len(text) > 2):
             await self._interrupt()
         if event.final:
             self._pending_user_text = self._merge_user_text(
@@ -103,13 +103,29 @@ class MainControlExtension(AsyncExtension):
             self._schedule_pending_user_commit()
             return
 
-        transcript_text = self._merge_user_text(
-            self._pending_user_text, text
-        )
+        if not self.config.interrupt_on_partial and self._pending_user_text:
+            # Continuing speech postpones submission of the preceding segment.
+            self._schedule_pending_user_commit()
+
+        transcript_text = self._merge_user_text(self._pending_user_text, text)
         await self._send_transcript("user", transcript_text, False, stream_id)
 
     @agent_event_handler(LLMResponseEvent)
     async def _on_llm_response(self, event: LLMResponseEvent):
+        if (
+            self.config.report_tts_summary
+            and event.type == "message"
+            and event.text.lstrip().startswith("MBTI ")
+            and "报告" in event.text.split("\n", 1)[0]
+        ):
+            self.sentence_fragment = ""
+            if event.is_final:
+                await self._send_to_tts(self.config.report_tts_summary, True)
+            await self._send_transcript(
+                "assistant", event.text, event.is_final, 100
+            )
+            return
+
         if not event.is_final and event.type == "message":
             sentences, self.sentence_fragment = parse_sentences(
                 self.sentence_fragment, event.delta
@@ -236,9 +252,7 @@ class MainControlExtension(AsyncExtension):
 
     async def _commit_pending_user_input(self):
         try:
-            debounce_seconds = max(
-                self.config.asr_final_debounce_ms, 0
-            ) / 1000
+            debounce_seconds = max(self.config.asr_final_debounce_ms, 0) / 1000
             await asyncio.sleep(debounce_seconds)
 
             text = self._pending_user_text.strip()
@@ -248,6 +262,8 @@ class MainControlExtension(AsyncExtension):
 
             self._pending_user_text = ""
             self._pending_user_stream_id = None
+            if not self.config.interrupt_on_partial:
+                await self._interrupt()
             self.turn_id += 1
             await self._send_transcript(
                 "user", text, True, stream_id or int(self.session_id)
