@@ -115,8 +115,11 @@ class MainControlExtension(AsyncExtension):
         if (
             self.config.report_tts_summary
             and event.type == "message"
-            and event.text.lstrip().startswith("MBTI ")
-            and "报告" in event.text.split("\n", 1)[0]
+            and (
+                event.text.lstrip().startswith("# 临床PM AI面试报告")
+                or event.text.lstrip().startswith("临床PM AI面试报告")
+                or event.text.lstrip().startswith("MBTI 性格偏好报告")
+            )
         ):
             self.sentence_fragment = ""
             if event.is_final:

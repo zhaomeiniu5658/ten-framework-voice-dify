@@ -1,0 +1,216 @@
+apiVersion: app.sealos.io/v1
+kind: Template
+metadata:
+  name: ten-voice-ai-interview
+spec:
+  title: AI Interview Agent
+  url: https://github.com/zhaomeiniu5658/ten-framework-voice-dify
+  gitRepo: https://github.com/zhaomeiniu5658/ten-framework-voice-dify
+  author: Maypharm
+  description: Voice MBTI interview agent powered by TEN Framework and Dify.
+  readme: https://raw.githubusercontent.com/labring-actions/templates/kb-0.9/template/ten-voice-ai-interview/README.md
+  icon: https://raw.githubusercontent.com/labring-actions/templates/kb-0.9/template/ten-voice-ai-interview/logo.svg
+  templateType: inline
+  locale: en
+  i18n:
+    zh:
+      description: 基于 TEN Framework 和 Dify 的语音 MBTI 面试智能体。
+      readme: https://raw.githubusercontent.com/labring-actions/templates/kb-0.9/template/ten-voice-ai-interview/README_zh.md
+  categories:
+    - ai
+  defaults:
+    app_name:
+      type: string
+      value: ten-voice-ai-interview-${{ random(8) }}
+    app_host:
+      type: string
+      value: ten-voice-ai-interview-${{ random(8) }}
+  inputs:
+    AGORA_APP_ID: { type: string, required: true, description: Agora App ID }
+    AGORA_APP_CERTIFICATE: { type: string, required: false, default: '', description: Agora App Certificate }
+    BYTEDANCE_ASR_APP_ID: { type: string, required: true, description: ByteDance ASR App ID }
+    BYTEDANCE_ASR_TOKEN: { type: string, required: true, description: ByteDance ASR Token }
+    BYTEDANCE_ASR_API_KEY: { type: string, required: false, default: '', description: ByteDance ASR API Key }
+    BYTEDANCE_ASR_RESOURCE_ID: { type: string, required: false, default: 'volc.seedasr.sauc.duration', description: ByteDance ASR Resource ID }
+    BYTEDANCE_ASR_MODEL_VERSION: { type: string, required: false, default: '400', description: ByteDance ASR Model Version }
+    BYTEDANCE_TTS_APPID: { type: string, required: true, description: ByteDance TTS App ID }
+    BYTEDANCE_TTS_TOKEN: { type: string, required: true, description: ByteDance TTS Token }
+    BYTEDANCE_TTS_RESOURCE_ID: { type: string, required: true, description: ByteDance TTS Resource ID }
+    DIFY_BASE_URL: { type: string, required: true, description: Dify API base URL }
+    DIFY_CHATFLOW_API_KEY: { type: string, required: true, description: Dify Chatflow API key }
+    DIFY_API_KEY: { type: string, required: true, description: Dify API key }
+    LOG_PATH: { type: string, required: false, default: '/tmp/ten_voice_ai_interview', description: Log path }
+    LOG_STDOUT: { type: string, required: false, default: 'true', description: Log to stdout }
+    SERVER_PORT: { type: string, required: false, default: '8080', description: Internal API port }
+    WORKERS_MAX: { type: string, required: false, default: '5', description: Worker limit }
+    WORKER_QUIT_TIMEOUT_SECONDS: { type: string, required: false, default: '60', description: Worker shutdown timeout }
+    PORT: { type: string, required: false, default: '3000', description: Frontend port }
+    NEXT_HOSTNAME: { type: string, required: false, default: '0.0.0.0', description: Frontend bind host }
+    NODE_ENV: { type: string, required: false, default: 'production', description: Runtime mode }
+    NEXT_PUBLIC_EDIT_GRAPH_MODE: { type: string, required: false, default: 'false', description: Disable graph editor }
+    AGENT_SERVER_URL: { type: string, required: false, default: 'http://127.0.0.1:8080', description: Internal agent API URL }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${{ defaults.app_name }}
+  annotations:
+    originImageName: ghcr.io/zhaomeiniu5658/ten-voice-dify@sha256:d209419f62258de09a54b7c99a8874c3717fbc99bbc26f7aebfb8b99b4b4bbfb
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    app: ${{ defaults.app_name }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: ${{ defaults.app_name }}
+  template:
+    metadata:
+      labels:
+        app: ${{ defaults.app_name }}
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: ${{ defaults.app_name }}
+      containers:
+        - name: ${{ defaults.app_name }}
+          image: ghcr.io/zhaomeiniu5658/ten-voice-dify@sha256:d209419f62258de09a54b7c99a8874c3717fbc99bbc26f7aebfb8b99b4b4bbfb
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: AGORA_APP_ID
+              value: ${{ inputs.AGORA_APP_ID }}
+            - name: AGORA_APP_CERTIFICATE
+              value: ${{ inputs.AGORA_APP_CERTIFICATE }}
+            - name: BYTEDANCE_ASR_APP_ID
+              value: ${{ inputs.BYTEDANCE_ASR_APP_ID }}
+            - name: BYTEDANCE_ASR_TOKEN
+              value: ${{ inputs.BYTEDANCE_ASR_TOKEN }}
+            - name: BYTEDANCE_ASR_API_KEY
+              value: ${{ inputs.BYTEDANCE_ASR_API_KEY }}
+            - name: BYTEDANCE_ASR_RESOURCE_ID
+              value: ${{ inputs.BYTEDANCE_ASR_RESOURCE_ID }}
+            - name: BYTEDANCE_ASR_MODEL_VERSION
+              value: ${{ inputs.BYTEDANCE_ASR_MODEL_VERSION }}
+            - name: BYTEDANCE_TTS_APPID
+              value: ${{ inputs.BYTEDANCE_TTS_APPID }}
+            - name: BYTEDANCE_TTS_TOKEN
+              value: ${{ inputs.BYTEDANCE_TTS_TOKEN }}
+            - name: BYTEDANCE_TTS_RESOURCE_ID
+              value: ${{ inputs.BYTEDANCE_TTS_RESOURCE_ID }}
+            - name: DIFY_BASE_URL
+              value: ${{ inputs.DIFY_BASE_URL }}
+            - name: DIFY_CHATFLOW_API_KEY
+              value: ${{ inputs.DIFY_CHATFLOW_API_KEY }}
+            - name: DIFY_API_KEY
+              value: ${{ inputs.DIFY_API_KEY }}
+            - name: LOG_PATH
+              value: ${{ inputs.LOG_PATH }}
+            - name: LOG_STDOUT
+              value: ${{ inputs.LOG_STDOUT }}
+            - name: SERVER_PORT
+              value: ${{ inputs.SERVER_PORT }}
+            - name: WORKERS_MAX
+              value: ${{ inputs.WORKERS_MAX }}
+            - name: WORKER_QUIT_TIMEOUT_SECONDS
+              value: ${{ inputs.WORKER_QUIT_TIMEOUT_SECONDS }}
+            - name: PORT
+              value: ${{ inputs.PORT }}
+            - name: NEXT_HOSTNAME
+              value: ${{ inputs.NEXT_HOSTNAME }}
+            - name: NODE_ENV
+              value: ${{ inputs.NODE_ENV }}
+            - name: NEXT_PUBLIC_EDIT_GRAPH_MODE
+              value: ${{ inputs.NEXT_PUBLIC_EDIT_GRAPH_MODE }}
+            - name: AGENT_SERVER_URL
+              value: ${{ inputs.AGENT_SERVER_URL }}
+          ports:
+            - name: http
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: 200m
+              memory: 409Mi
+            limits:
+              cpu: "2"
+              memory: 4096Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${{ defaults.app_name }}
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    app: ${{ defaults.app_name }}
+spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+  selector:
+    app: ${{ defaults.app_name }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${{ defaults.app_name }}
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    cloud.sealos.io/app-deploy-manager-domain: ${{ defaults.app_host }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 32m
+    nginx.ingress.kubernetes.io/server-snippet: |
+      client_header_buffer_size 64k;
+      large_client_header_buffers 4 128k;
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 64k
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 64k
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($request_uri ~* \.(js|css|gif|jpe?g|png)) {
+        expires 30d;
+        add_header Cache-Control "public";
+      }
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '300'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '300'
+spec:
+  rules:
+    - host: ${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ${{ defaults.app_name }}
+                port:
+                  number: 3000
+  tls:
+    - hosts:
+        - ${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
+      secretName: ${{ SEALOS_CERT_SECRET_NAME }}
+---
+apiVersion: app.sealos.io/v1
+kind: App
+metadata:
+  name: ${{ defaults.app_name }}
+spec:
+  data:
+    url: https://${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
+  displayType: normal
+  icon: https://raw.githubusercontent.com/labring-actions/templates/kb-0.9/template/ten-voice-ai-interview/logo.svg
+  name: AI Interview Agent
+  type: link

@@ -46,6 +46,8 @@ def _is_evaluation_report(text: str) -> bool:
         "评分维度",
         "推荐结论",
         "候选人基本信息",
+        "临床PM AI面试报告",
+        "AI面试报告",
         "AI 面试评价报告",
         "AI面试评价报告",
     ]
@@ -53,18 +55,12 @@ def _is_evaluation_report(text: str) -> bool:
 
 
 def _sanitize_interview_answer(text: str) -> str:
+    """Keep report Markdown intact; the Dify code node controls timing."""
+    text = _strip_thinking_blocks(text)
     if _is_evaluation_report(text):
-        return (
-            "我们先不做评价报告，继续面试。"
-            "请用一个具体项目说明你的职责、项目阶段和处理过的关键问题。"
-        )
-
+        return text.strip()
     text = re.sub(r"[*_`#>\-|]+", "", text)
-    if text.lstrip().startswith("MBTI ") and "报告" in text.split("\n", 1)[0]:
-        text = re.sub(r"[^\S\n]+", " ", text).strip()
-    else:
-        text = re.sub(r"\s+", " ", text).strip()
-    return text
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def _sanitize_stream_delta(text: str) -> str:
@@ -220,8 +216,12 @@ class DifyChatClient:
         if self.config.user_id:
             payload["user"] = self.config.user_id
 
+        # Candidate answers may contain private work information. Log only
+        # request metadata, never the query or API key.
         self.ten_env.log_info(
-            f"[Dify] POST {self._url('chat-messages')} payload={payload}"
+            f"[Dify] POST {self._url('chat-messages')} "
+            f"response_mode={payload['response_mode']} "
+            f"has_conversation={bool(self._conversation_id)}"
         )
 
         full_content = ""

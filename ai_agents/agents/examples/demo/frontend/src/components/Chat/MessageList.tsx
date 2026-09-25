@@ -31,7 +31,9 @@ export function MessageItem(props: { data: IChatItem }) {
   const { data } = props;
   const isReport =
     data.type === EMessageType.AGENT &&
-    data.text.startsWith("MBTI 性格偏好报告\n");
+    (data.text.startsWith("# 临床PM AI面试报告") ||
+      data.text.startsWith("临床PM AI面试报告") ||
+      data.text.startsWith("MBTI 性格偏好报告\n"));
 
   return (
     <div
