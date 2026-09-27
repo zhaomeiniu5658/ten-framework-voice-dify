@@ -45,3 +45,15 @@ test('interview stays idle until finish, preserves follow-ups and final answer; 
   await store.finishInterview(failedId, [], true);
   assert.equal((await store.readInterview(failedId)).transcript.length, 4);
 });
+
+test('history lists separate sessions without exposing transcripts and tolerates corrupt files', async () => {
+  const first = await store.createInterview();
+  const second = await store.createInterview();
+  fs.writeFileSync(path.join(root, 'records', '00000000-0000-0000-0000-000000000000.json'), '{');
+  const history = await store.listInterviews();
+  assert.ok(history.some(r => r.id === first));
+  assert.ok(history.some(r => r.id === second));
+  assert.equal(history.find(r => r.id === second).candidateName, '林予安（演示候选人）');
+  assert.ok(history.every(r => !('transcript' in r) && !('markdown' in r)));
+  assert.deepEqual(history.map(r => r.createdAt), history.map(r => r.createdAt).sort().reverse());
+});

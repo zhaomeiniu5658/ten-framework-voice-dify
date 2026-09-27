@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import InterviewHistoryDialog from "@/components/Dialog/InterviewHistory";
 import InterviewReportDialog from "@/components/Dialog/InterviewReport";
 import { toast } from "sonner";
 import {
@@ -246,6 +247,7 @@ export default function Action(props: { className?: string }) {
 
         {/* -- Action Button */}
         <div className="ml-auto flex items-center gap-2">
+          <InterviewHistoryDialog />
           <InterviewReportDialog />
           <SettingsDialog />
           <LoadingButton

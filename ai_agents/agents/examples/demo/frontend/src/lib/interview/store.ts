@@ -1,11 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile, rename } from "node:fs/promises";
+import { mkdir, readFile, writeFile, rename, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { analyzeInterview, type Turn } from "./report";
 
 export type Interview = {
   id: string; status: "interviewing" | "analyzing" | "ready" | "failed";
+  candidateName?: string;
   createdAt: string; endedAt?: string; updatedAt: string;
   transcript: Turn[]; markdown?: string; error?: string;
 };
@@ -21,7 +22,7 @@ async function save(value: Interview) {
 export async function createInterview() {
   const now = new Date().toISOString();
   const value: Interview = { id: randomUUID(), status: "interviewing", createdAt: now,
-    updatedAt: now, transcript: [] };
+    candidateName: "林予安（演示候选人）", updatedAt: now, transcript: [] };
   await save(value);
   return value.id;
 }
@@ -71,4 +72,16 @@ export async function runAnalysis(id: string) {
 export function publicReport(value: Interview) {
   return { id: value.id, status: value.status, markdown: value.markdown,
     error: value.error, endedAt: value.endedAt, turnCount: value.transcript.length };
+}
+
+export async function listInterviews() {
+  let files: string[];
+  try { files = await readdir(root); }
+  catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return []; throw error; }
+  const records = await Promise.all(files.filter(f => f.endsWith(".json"))
+    .map(f => readInterview(f.slice(0, -5))));
+  return records.filter((r): r is Interview => r !== null)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map(r => ({ id: r.id, createdAt: r.createdAt, endedAt: r.endedAt,
+      candidateName: r.candidateName || "未登记姓名（旧记录）", status: r.status }));
 }
