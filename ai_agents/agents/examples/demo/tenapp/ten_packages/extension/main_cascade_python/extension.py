@@ -112,21 +112,13 @@ class MainControlExtension(AsyncExtension):
 
     @agent_event_handler(LLMResponseEvent)
     async def _on_llm_response(self, event: LLMResponseEvent):
-        if (
-            self.config.report_tts_summary
-            and event.type == "message"
-            and (
-                event.text.lstrip().startswith("# 临床PM AI面试报告")
-                or event.text.lstrip().startswith("临床PM AI面试报告")
-                or event.text.lstrip().startswith("MBTI 性格偏好报告")
-            )
-        ):
+        if event.text == "[[INTERVIEW_COMPLETED]]":
             self.sentence_fragment = ""
             if event.is_final:
-                await self._send_to_tts(self.config.report_tts_summary, True)
-            await self._send_transcript(
-                "assistant", event.text, event.is_final, 100
-            )
+                await self._send_transcript(
+                    "assistant", "completed", True, 100,
+                    data_type="interview_completed",
+                )
             return
 
         if not event.is_final and event.type == "message":
@@ -172,7 +164,7 @@ class MainControlExtension(AsyncExtension):
         text: str,
         final: bool,
         stream_id: int,
-        data_type: Literal["text", "reasoning"] = "text",
+        data_type: Literal["text", "reasoning", "interview_completed"] = "text",
     ):
         """
         Sends the transcript (ASR or LLM output) to the message collector.
@@ -184,13 +176,13 @@ class MainControlExtension(AsyncExtension):
             )
             return
 
-        if data_type == "text":
+        if data_type in ("text", "interview_completed"):
             await _send_data(
                 self.ten_env,
                 "message",
                 "message_collector",
                 {
-                    "data_type": "transcribe",
+                    "data_type": "interview_completed" if data_type == "interview_completed" else "transcribe",
                     "role": role,
                     "text": text,
                     "text_ts": int(time.time() * 1000),

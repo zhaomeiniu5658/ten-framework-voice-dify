@@ -28,6 +28,9 @@ import type {
 } from "@/types";
 
 export interface InitialState {
+  nextChatItemId: number;
+  interviewSessionId: string;
+  interviewEnded: boolean;
   options: IOptions;
   roomConnected: boolean;
   agentConnected: boolean;
@@ -51,6 +54,9 @@ export interface InitialState {
 
 const getInitialState = (): InitialState => {
   return {
+    nextChatItemId: 0,
+    interviewSessionId: "",
+    interviewEnded: false,
     options: DEFAULT_OPTIONS,
     themeColor: COLOR_LIST[0].active,
     roomConnected: false,
@@ -74,6 +80,12 @@ export const globalSlice = createSlice({
   name: "global",
   initialState: getInitialState(),
   reducers: {
+    beginInterview: (state, action: PayloadAction<string>) => {
+      state.interviewSessionId = action.payload;
+      state.interviewEnded = false;
+      state.chatItems = [];
+    },
+    endInterview: (state) => { state.interviewEnded = true; },
     setOptions: (state, action: PayloadAction<Partial<IOptions>>) => {
       state.options = { ...state.options, ...action.payload };
       setOptionsToLocal(state.options);
@@ -92,6 +104,11 @@ export const globalSlice = createSlice({
       state.rtmConnected = action.payload;
     },
     addChatItem: (state, action: PayloadAction<IChatItem>) => {
+      if (action.payload.data_type === "interview_completed") {
+        state.interviewEnded = true;
+        return;
+      }
+      if (state.interviewEnded && state.interviewSessionId) return;
       const { userId, text, isFinal, type, time } = action.payload;
       const normalizedText = text.trim();
       const recentDuplicate = state.chatItems
@@ -117,7 +134,7 @@ export const globalSlice = createSlice({
 
       if (!lastSameSpeakerItem || lastSameSpeakerItem.isFinal) {
         console.log("[test] addChatItem, add new item:", text, isFinal, type);
-        state.chatItems.push(action.payload);
+        state.chatItems.push({ ...action.payload, id: `chat-${state.nextChatItemId++}` });
       } else if (time >= lastSameSpeakerItem.time) {
         console.log(
           "[test] addChatItem, update last item(none final):",
@@ -125,7 +142,9 @@ export const globalSlice = createSlice({
           isFinal,
           type
         );
-        state.chatItems[lastSameSpeakerIndex] = action.payload;
+        state.chatItems[lastSameSpeakerIndex] = {
+          ...action.payload, id: lastSameSpeakerItem.id,
+        };
       } else {
         console.log(
           "[test] addChatItem, time < last same speaker item, discard!:",
@@ -215,6 +234,8 @@ export const globalSlice = createSlice({
 });
 
 export const {
+  beginInterview,
+  endInterview,
   reset,
   setOptions,
   setRoomConnected,

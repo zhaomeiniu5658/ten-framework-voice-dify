@@ -4,7 +4,6 @@ import { useAppSelector, useAutoScroll } from "@/common";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { EMessageDataType, EMessageType, type IChatItem } from "@/types";
-import { MBTIReport } from "./MBTIReport";
 
 export default function MessageList(props: { className?: string }) {
   const { className } = props;
@@ -21,7 +20,7 @@ export default function MessageList(props: { className?: string }) {
       className={cn("flex-grow space-y-2 overflow-y-auto p-4", className)}
     >
       {chatItems.map((item, _index) => {
-        return <MessageItem data={item} key={item.time} />;
+        return <MessageItem data={item} key={item.id ?? `${item.type}-${item.userId}-${item.time}-${_index}`} />;
       })}
     </div>
   );
@@ -29,11 +28,7 @@ export default function MessageList(props: { className?: string }) {
 
 export function MessageItem(props: { data: IChatItem }) {
   const { data } = props;
-  const isReport =
-    data.type === EMessageType.AGENT &&
-    (data.text.startsWith("# 临床PM AI面试报告") ||
-      data.text.startsWith("临床PM AI面试报告") ||
-      data.text.startsWith("MBTI 性格偏好报告\n"));
+
 
   return (
     <div
@@ -59,14 +54,10 @@ export function MessageItem(props: { data: IChatItem }) {
       <div
         className={cn(
           "rounded-lg bg-secondary text-secondary-foreground",
-          isReport
-            ? "w-full max-w-3xl border border-white/10 p-5 md:p-7"
-            : "max-w-[80%] p-2"
+          "max-w-[80%] p-2"
         )}
       >
-        {isReport ? (
-          <MBTIReport text={data.text} />
-        ) : data.data_type === EMessageDataType.IMAGE ? (
+        {data.data_type === EMessageDataType.IMAGE ? (
           <img src={data.text} alt="chat" className="w-full" />
         ) : (
           <p

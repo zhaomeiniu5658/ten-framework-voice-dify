@@ -2273,6 +2273,7 @@
               "addon": "dify_llm2_python",
               "extension_group": "chatgpt",
               "property": {
+                "opening_delivered": true,
                 "user_id": "User",
                 "api_key": "${env:DIFY_API_KEY}",
                 "base_url": "${env:DIFY_BASE_URL|http://dify-api-1:5001/v1}"
@@ -2303,10 +2304,10 @@
               "addon": "main_cascade_python",
               "extension_group": "control",
               "property": {
-                "greeting": "我是今天的AI面试官，您准备好了就开始。",
+                "greeting": "您好，我是今天的 AI 面试官。请你先介绍一下自己。",
                 "asr_final_debounce_ms": 900,
                 "interrupt_on_partial": false,
-                "report_tts_summary": "谢谢您的配合，本次临床 PM 面试结束。Markdown 报告已生成，请查看详细结果。"
+                "report_tts_summary": ""
               }
             },
             {

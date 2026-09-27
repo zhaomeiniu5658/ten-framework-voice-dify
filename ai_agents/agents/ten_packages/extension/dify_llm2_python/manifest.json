@@ -33,6 +33,7 @@
     ],
     "property": {
       "properties": {
+        "opening_delivered": {"type": "bool"},
         "user_id": {
           "type": "string"
         },

@@ -44,11 +44,13 @@ export enum EMessageType {
 
 export enum EMessageDataType {
   TEXT = "text",
+  INTERVIEW_COMPLETED = "interview_completed",
   IMAGE = "image",
   REASON = "reason",
 }
 
 export interface IChatItem {
+  id?: string;
   userId: number | string;
   userName?: string;
   text: string;

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { createInterview } from "@/lib/interview/store";
 import { type NextRequest, NextResponse } from "next/server";
 import { getGraphProperties } from "./graph";
 
@@ -149,6 +150,9 @@ export async function POST(request: NextRequest) {
     });
 
     const responseData = response.data;
+    if (graph_name.includes("dify") && [0, "0"].includes(responseData.code)) {
+      responseData.interview_session_id = await createInterview();
+    }
 
     return NextResponse.json(responseData, { status: response.status });
   } catch (error) {

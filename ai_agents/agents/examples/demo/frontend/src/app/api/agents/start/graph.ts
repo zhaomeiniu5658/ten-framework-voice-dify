@@ -6,8 +6,7 @@ const OPENAI_REALTIME_15_MODEL = "gpt-realtime-1.5";
 const OPENAI_REALTIME_MINI_MODEL = "gpt-realtime-mini";
 const MINIMAX_DEFAULT_PROMPT =
   "Provide short, narrative responses in plain text. Keep answers concise and natural. Do not use emoji, markdown formatting, or special decorative characters.";
-const CLINICAL_PM_AGENT_GREETING =
-  "我是今天的AI面试官，您准备好了就开始。";
+const CLINICAL_PM_AGENT_GREETING = "您好，我是今天的 AI 面试官。请你先介绍一下自己。";
 
 export const voiceNameMap: LanguageMap = {
   "zh-CN": {
@@ -343,6 +342,7 @@ export const getGraphProperties = (
         },
       },
       llm: {
+        opening_delivered: true,
         // The Dify Chatflow owns the clinical PM interview instructions; ignore stale prompts.
         prompt: "",
       },
@@ -350,17 +350,13 @@ export const getGraphProperties = (
         greeting: CLINICAL_PM_AGENT_GREETING,
         interrupt_on_partial: false,
         asr_final_debounce_ms: 900,
-        report_tts_summary:
-          "谢谢您的配合，本次临床 PM 面试结束。Markdown 报告已生成，请查看详细结果。",
+        report_tts_summary: "",
       },
       tts: {
         params: {
-          propertys: [
-            [
-              "SpeechServiceConnection_SynthVoice",
-              voiceNameMap[language].azure[voiceType],
-            ],
-          ],
+          speaker: voiceType === "female"
+            ? "zh_female_shuangkuaisisi_moon_bigtts"
+            : "zh_male_baqiqingshu_uranus_bigtts",
         },
       },
     };

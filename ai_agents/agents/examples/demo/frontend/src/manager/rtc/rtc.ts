@@ -268,6 +268,9 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
           isFinal: is_final,
         };
 
+        if (data_type === "interview_completed") {
+          textItem.data_type = EMessageDataType.INTERVIEW_COMPLETED;
+        }
         if (data_type === "raw") {
           const { data, type } = JSON.parse(text);
           if (type === "image_url") {
@@ -285,7 +288,7 @@ export class RtcManager extends AGEventEmitter<RtcEvents> {
           }
         }
 
-        if (text.trim().length > 0) {
+        if (text.trim().length > 0 || data_type === "interview_completed") {
           this.emit("textChanged", textItem);
         }
 

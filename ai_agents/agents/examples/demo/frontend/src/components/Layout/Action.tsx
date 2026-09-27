@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import InterviewReportDialog from "@/components/Dialog/InterviewReport";
 import { toast } from "sonner";
 import {
   apiPing,
@@ -23,6 +24,8 @@ import SettingsDialog, {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import {
+  beginInterview,
+  endInterview,
   setAgentConnected,
   setAgentConnecting,
   setGlobalSettingsDialog,
@@ -87,6 +90,7 @@ export default function Action(props: { className?: string }) {
         }
         dispatch(setAgentConnected(false));
         dispatch(setAgentConnecting(false));
+        if (isDifyGraph(graphName)) dispatch(endInterview());
         toast.success(code === "10002" ? "Agent already disconnected" : "Agent disconnected");
         stopPing();
       } else {
@@ -172,6 +176,7 @@ export default function Action(props: { className?: string }) {
           }
           throw new Error(msg);
         }
+        if (res.interview_session_id) dispatch(beginInterview(res.interview_session_id));
         dispatch(setAgentConnected(true));
         dispatch(setAgentConnecting(false));
         toast.success("Agent connected");
@@ -241,6 +246,7 @@ export default function Action(props: { className?: string }) {
 
         {/* -- Action Button */}
         <div className="ml-auto flex items-center gap-2">
+          <InterviewReportDialog />
           <SettingsDialog />
           <LoadingButton
             onClick={onClickConnect}

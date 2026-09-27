@@ -121,6 +121,7 @@ class DifyLLM2Config(BaseModel):
     api_key: str = ""
     base_url: str = "https://api.dify.ai/v1"
     user_id: str = "TenAgent"
+    opening_delivered: bool = False
     prompt: str = ""
     # Networking
     connect_timeout_s: float = 15.0
@@ -197,6 +198,19 @@ class DifyChatClient:
                     query_text = m.content
                     break
 
+        # The question-only Chatflow has no progress variables. The business
+        # transport handles explicit completion before asking another question.
+        end_query = re.sub(r"[\s，。！？,.!?]", "", query_text)
+        if self.config.opening_delivered and re.fullmatch(
+            r"(?:我想|请|现在)?(?:结束|停止|先到这里|不聊了|退出)(?:面试|访谈)?(?:吧|一下)?",
+            end_query,
+        ):
+            yield LLMResponseMessageDone(
+                response_id="", role="assistant",
+                content="[[INTERVIEW_COMPLETED]]", created=0,
+            )
+            return
+
         # NOTE: Dify does not support tool calls in this endpoint; we ignore tools/messages of function types.
         # Keep behavior symmetrical with your OpenAI extension: we only stream assistant text.
         if self.config.prompt:
@@ -207,7 +221,10 @@ class DifyChatClient:
             )
 
         payload = {
-            "inputs": {},
+            "inputs": (
+                {"opening_delivered": "true"}
+                if self.config.opening_delivered else {}
+            ),
             "query": query_text,
             "response_mode": "streaming",
         }
@@ -258,6 +275,8 @@ class DifyChatClient:
                 except Exception:
                     continue
 
+                if evt.get("conversation_id"):
+                    self._conversation_id = evt["conversation_id"]
                 event_type = evt.get("event")
                 if event_type in ("message", "agent_message"):
                     # cache conversation id once
@@ -326,6 +345,10 @@ class DifyChatClient:
                 delta=tail_delta,
                 created=created,
             )
+
+        # A transport-only control signal is intercepted before chat/TTS.
+        if not full_content and self.config.opening_delivered:
+            full_content = "[[INTERVIEW_COMPLETED]]"
 
         # Emit the terminal message (even if empty) to mirror OpenAI sample
         yield LLMResponseMessageDone(
