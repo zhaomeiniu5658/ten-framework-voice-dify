@@ -21,5 +21,8 @@
   "NEXT_HOSTNAME": "0.0.0.0",
   "NODE_ENV": "production",
   "NEXT_PUBLIC_EDIT_GRAPH_MODE": "false",
-  "AGENT_SERVER_URL": "http://127.0.0.1:8080"
+  "AGENT_SERVER_URL": "http://127.0.0.1:8080",
+  "INTERVIEW_ANALYSIS_API_KEY": "sk-6cd6019ce17446ec9ff9b392004b27c1",
+  "INTERVIEW_ANALYSIS_BASE_URL": "https://api.deepseek.com",
+  "INTERVIEW_ANALYSIS_MODEL": "deepseek-v4-flash"
 }

@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "app": "ten-voice-ai-interview-pqehcrgg",
+  "apiCode": 200,
+  "networks": [
+    {
+      "serviceName": "ten-voice-ai-interview-pqehcrgg",
+      "networkName": "ten-voice-ai-interview-pqehcrgg",
+      "portName": "http",
+      "port": 3000,
+      "protocol": "TCP",
+      "appProtocol": "HTTP",
+      "openPublicDomain": true,
+      "publicDomain": "ten-voice-ai-interview-ycudzago",
+      "customDomain": "",
+      "domain": "sealoshzh.site",
+      "hosts": [
+        "ten-voice-ai-interview-ycudzago.sealoshzh.site"
+      ]
+    }
+  ],
+  "findings": []
+}

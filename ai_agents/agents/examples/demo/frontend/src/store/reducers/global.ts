@@ -85,6 +85,10 @@ export const globalSlice = createSlice({
       state.interviewEnded = false;
       state.chatItems = [];
     },
+    setInterviewSessionId: (state, action: PayloadAction<string>) => {
+      state.interviewSessionId = action.payload;
+      state.interviewEnded = false;
+    },
     endInterview: (state) => { state.interviewEnded = true; },
     setOptions: (state, action: PayloadAction<Partial<IOptions>>) => {
       state.options = { ...state.options, ...action.payload };
@@ -235,6 +239,7 @@ export const globalSlice = createSlice({
 
 export const {
   beginInterview,
+  setInterviewSessionId,
   endInterview,
   reset,
   setOptions,

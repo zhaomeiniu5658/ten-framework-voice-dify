@@ -69,6 +69,98 @@ class InterruptionTests(unittest.IsolatedAsyncioTestCase):
         await self.control._pending_user_commit_task
         self.assertEqual(self.control._interrupt.await_count, 2)
 
+    async def test_long_answer_waits_for_tail_final_before_replying(self):
+        self.control._send_to_tts = AsyncMock()
+
+        async def reply(text):
+            response = "这个中心最终取得了什么结果？"
+            await self.control._on_llm_response(
+                LLMResponseEvent(delta=response, text=response, is_final=False)
+            )
+            await self.control._on_llm_response(
+                LLMResponseEvent(delta="", text=response, is_final=True)
+            )
+
+        self.control.agent.queue_llm_input.side_effect = reply
+        await self.send("我协调公司增派CRC。", final=True)
+        await self.send("同时与PI对齐每周目标")
+        # Reproduce the vendor's delayed final after partial updates stop.
+        await asyncio.sleep(0.12)
+        self.control.agent.queue_llm_input.assert_not_awaited()
+        self.control._interrupt.assert_not_awaited()
+        self.control._send_to_tts.assert_not_awaited()
+        await self.send("同时与PI对齐每周目标，最终追回进度。", final=True)
+        await self.control._pending_user_commit_task
+        self.control.agent.queue_llm_input.assert_awaited_once_with(
+            "我协调公司增派CRC。同时与PI对齐每周目标，最终追回进度。"
+        )
+        self.control._interrupt.assert_awaited_once()
+        final_audio = [
+            call
+            for call in self.control._send_to_tts.await_args_list
+            if call.args[1]
+        ]
+        self.assertEqual(len(final_audio), 1)
+
+    async def test_short_pause_between_final_segments_merges_one_turn(self):
+        await self.send("先核查原因。", final=True)
+        await asyncio.sleep(0.01)
+        await self.send("再明确分工。", final=True)
+        await self.control._pending_user_commit_task
+        self.control.agent.queue_llm_input.assert_awaited_once_with(
+            "先核查原因。再明确分工。"
+        )
+
+    async def test_new_partial_does_not_cancel_submission_in_progress(self):
+        entered = asyncio.Event()
+        release = asyncio.Event()
+
+        async def slow_interrupt():
+            entered.set()
+            await release.wait()
+
+        self.control._interrupt.side_effect = slow_interrupt
+        await self.send("已确认的回答。", final=True)
+        submission = self.control._pending_user_commit_task
+        await asyncio.wait_for(entered.wait(), 1)
+        await self.send("下一轮回答还在识别")
+        release.set()
+        await submission
+        self.control.agent.queue_llm_input.assert_awaited_once_with(
+            "已确认的回答。"
+        )
+
+    async def test_explicit_end_sends_farewell_and_marks_interview_complete(
+        self,
+    ):
+        self.control._send_to_tts = AsyncMock()
+        await self.control._on_llm_response(
+            LLMResponseEvent(
+                delta="",
+                text="[[INTERVIEW_COMPLETED]]",
+                is_final=True,
+            )
+        )
+        self.assertTrue(self.control._interview_completed)
+        self.control._send_to_tts.assert_awaited_once()
+        self.assertTrue(
+            self.control._send_to_tts.await_args.args[0].startswith(
+                "好的，本次面试已结束"
+            )
+        )
+        self.assertEqual(self.control._send_to_tts.await_args.args[1], True)
+        completed = [
+            call
+            for call in self.control._send_transcript.await_args_list
+            if call.kwargs.get("data_type") == "interview_completed"
+        ]
+        self.assertEqual(len(completed), 1)
+
+    async def test_completed_interview_ignores_late_speech(self):
+        self.control._interview_completed = True
+        await self.send("拜拜", final=True)
+        self.control.agent.queue_llm_input.assert_not_awaited()
+
     async def test_report_displays_full_text_but_speaks_summary_once(self):
         self.control.config.report_tts_summary = "报告已生成，谢谢您的配合。"
         self.control._send_to_tts = AsyncMock()

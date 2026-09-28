@@ -1,0 +1,13 @@
+{
+  "id": "c6d28746-8218-424a-8add-5f8244a6213a",
+  "fixture": "synthetic",
+  "startedAt": "2026-09-28T05:51:11.708802+00:00",
+  "submitStatus": 202,
+  "status": "ready",
+  "turnCount": 2,
+  "markdownLength": 4143,
+  "hasExpectedHeading": true,
+  "completedAt": "2026-09-28T05:52:59.844041+00:00",
+  "error": null,
+  "syntheticFixtureCleaned": true
+}

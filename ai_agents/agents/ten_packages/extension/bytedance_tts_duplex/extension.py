@@ -363,7 +363,11 @@ class BytedanceTTSDuplexExtension(AsyncTTS2BaseExtension):
                 and t.request_id == self.last_completed_request_id
             ):
                 error_msg = f"Request ID {t.request_id} has already been completed (last completed: {self.last_completed_request_id})"
-                self.ten_env.log_error(error_msg)
+                self.ten_env.log_warn(error_msg)
+                # A final text chunk may already be in flight when a flush
+                # completes. The base queue has selected this request again;
+                # release it or all subsequent requests stay buffered forever.
+                await self.finish_request(t.request_id)
                 return
             if t.request_id != self.current_request_id:
                 self.ten_env.log_info(
@@ -486,10 +490,10 @@ class BytedanceTTSDuplexExtension(AsyncTTS2BaseExtension):
                     f"Updated last completed request_id to: {t.request_id}"
                 )
 
+                stop_event = asyncio.Event()
+                self.stop_event = stop_event
                 await self.client.finish_session()
-
-                self.stop_event = asyncio.Event()
-                await self.stop_event.wait()
+                await stop_event.wait()
 
                 # session finished, connection will be re-established for next request
                 if not self.last_completed_has_reset_synthesizer:

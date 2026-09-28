@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import {
   beginInterview,
   endInterview,
+  setInterviewSessionId,
   setAgentConnected,
   setAgentConnecting,
   setGlobalSettingsDialog,
@@ -96,6 +97,10 @@ export default function Action(props: { className?: string }) {
         stopPing();
       } else {
         dispatch(setAgentConnecting(true));
+        // Clear the previous transcript before the worker can emit its
+        // greeting. The session id arrives after /start returns, and the
+        // greeting can otherwise be erased by beginInterview().
+        if (isDifyGraph(graphName)) dispatch(beginInterview(""));
         // handle connect
         // prepare start service payload
         const startServicePayload: StartRequestConfig = {
@@ -177,7 +182,9 @@ export default function Action(props: { className?: string }) {
           }
           throw new Error(msg);
         }
-        if (res.interview_session_id) dispatch(beginInterview(res.interview_session_id));
+        if (res.interview_session_id) {
+          dispatch(setInterviewSessionId(res.interview_session_id));
+        }
         dispatch(setAgentConnected(true));
         dispatch(setAgentConnecting(false));
         toast.success("Agent connected");

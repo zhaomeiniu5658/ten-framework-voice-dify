@@ -1,0 +1,177 @@
+{
+  "tool": "sealos-log-scan",
+  "generatedAt": "2026-09-28T05:53:28.719Z",
+  "namespace": "ns-udky0j90",
+  "app": "ten-voice-ai-interview-pqehcrgg",
+  "since": "5m",
+  "tail": 150,
+  "minWindowSeconds": 60,
+  "baseline": {
+    "provided": false,
+    "generatedAt": null,
+    "elapsedSeconds": null,
+    "complete": false
+  },
+  "ok": false,
+  "dryRun": false,
+  "pods": [
+    {
+      "uid": "c16619e9-ba52-4f85-b196-c04f77b102c9",
+      "name": "ten-voice-ai-interview-pqehcrgg-f8946b869-ffpzr",
+      "phase": "Running",
+      "ready": true,
+      "completed": false,
+      "failed": false,
+      "lifecycle": "Running",
+      "ownerKind": null,
+      "readyTransitionTime": "2026-09-28T05:49:08Z",
+      "restartCount": 0,
+      "restartDelta": 0,
+      "replaced": false,
+      "readyTransitionChanged": false,
+      "labels": {
+        "app": "ten-voice-ai-interview-pqehcrgg",
+        "pod-template-hash": "f8946b869"
+      },
+      "containers": [
+        {
+          "name": "ten-voice-ai-interview-pqehcrgg",
+          "type": "main",
+          "ready": true,
+          "restartCount": 0,
+          "state": {
+            "running": {
+              "startedAt": "2026-09-28T05:48:47Z"
+            }
+          },
+          "lastState": {},
+          "completionTime": null,
+          "exitCode": null,
+          "terminationReason": null,
+          "historicalCompletedInit": false,
+          "statusSignals": [],
+          "streams": [
+            {
+              "name": "current",
+              "ok": true,
+              "lineCount": 39,
+              "signals": [
+                {
+                  "id": "warning",
+                  "count": 3,
+                  "examples": [
+                    {
+                      "line": 7,
+                      "text": "[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached."
+                    },
+                    {
+                      "line": 9,
+                      "text": "[GIN-debug] [WARNING] Running in \"debug\" mode. Switch to \"release\" mode in production."
+                    },
+                    {
+                      "line": 26,
+                      "text": "[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value."
+                    }
+                  ]
+                },
+                {
+                  "id": "deprecation",
+                  "count": 1,
+                  "examples": [
+                    {
+                      "line": 35,
+                      "text": "(node:51) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead."
+                    }
+                  ]
+                },
+                {
+                  "id": "error",
+                  "count": 1,
+                  "examples": [
+                    {
+                      "line": 38,
+                      "text": "2026/09/28 05:51:30 ERROR handlerPing channel not existed channelName=agora_jgp0fm requestId=f3e540ca-48c5-4c0d-899f-8d43b7c15e9b service=HTTP_SERVER"
+                    }
+                  ]
+                }
+              ],
+              "error": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": [],
+  "eventSummary": {
+    "observed": 0,
+    "historical-transient": 0,
+    "active-failure": 0
+  },
+  "findings": [
+    {
+      "source": "log",
+      "pod": "ten-voice-ai-interview-pqehcrgg-f8946b869-ffpzr",
+      "container": "ten-voice-ai-interview-pqehcrgg",
+      "containerType": "main",
+      "stream": "current",
+      "signal": "deprecation",
+      "count": 1,
+      "baseline": null,
+      "delta": null,
+      "examples": [
+        {
+          "line": 35,
+          "text": "(node:51) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead."
+        }
+      ]
+    },
+    {
+      "source": "log",
+      "pod": "ten-voice-ai-interview-pqehcrgg-f8946b869-ffpzr",
+      "container": "ten-voice-ai-interview-pqehcrgg",
+      "containerType": "main",
+      "stream": "current",
+      "signal": "error",
+      "count": 1,
+      "baseline": null,
+      "delta": null,
+      "examples": [
+        {
+          "line": 38,
+          "text": "2026/09/28 05:51:30 ERROR handlerPing channel not existed channelName=agora_jgp0fm requestId=f3e540ca-48c5-4c0d-899f-8d43b7c15e9b service=HTTP_SERVER"
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "source": "log",
+      "pod": "ten-voice-ai-interview-pqehcrgg-f8946b869-ffpzr",
+      "container": "ten-voice-ai-interview-pqehcrgg",
+      "containerType": "main",
+      "stream": "current",
+      "signal": "warning",
+      "count": 3,
+      "delta": null,
+      "rule": "startup-warning",
+      "reason": "warning signal observed in the log stream",
+      "historicalCompletedInit": false,
+      "examples": [
+        {
+          "line": 7,
+          "text": "[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached."
+        },
+        {
+          "line": 9,
+          "text": "[GIN-debug] [WARNING] Running in \"debug\" mode. Switch to \"release\" mode in production."
+        },
+        {
+          "line": 26,
+          "text": "[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value."
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

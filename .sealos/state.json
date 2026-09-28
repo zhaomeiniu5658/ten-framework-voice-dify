@@ -1,0 +1,55 @@
+{
+  "version": "1.0",
+  "last_deploy": {
+    "app_name": "ten-voice-ai-interview-pqehcrgg",
+    "app_host": "ten-voice-ai-interview-ycudzago.sealoshzh.site",
+    "namespace": "ns-udky0j90",
+    "region": "hzh.sealos.run",
+    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f39718731b74e86b9bdc3df12ec4ce546a6ebd2a88dcff0c1b1514af23e857de",
+    "docker_hub_user": null,
+    "repo_name": "ten-voice-ai-interview",
+    "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
+    "deployed_at": "2026-09-28T03:28:43.637647+00:00",
+    "last_updated_at": "2026-09-28T06:26:02.054916+00:00"
+  },
+  "history": [
+    {
+      "at": "2026-09-28T03:28:43.637647+00:00",
+      "action": "deploy",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:4c37f10c89791cb75da8002b77a7adbde055cbfa8878c430047bc475076f4486",
+      "method": "template-api",
+      "status": "success",
+      "note": "Migrated existing deployment state; identity verified against cluster."
+    },
+    {
+      "at": "2026-09-28T05:55:29.444533+00:00",
+      "action": "set-image",
+      "previous_image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:4c37f10c89791cb75da8002b77a7adbde055cbfa8878c430047bc475076f4486",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:99f8aaa8234c6a40a44e20d4c85090cde5746523ac716a369eaf6cb262be276e",
+      "method": "kubectl-set-image",
+      "status": "success",
+      "note": "Updated existing Sealos Deployment to the latest immutable TCR image."
+    },
+    {
+      "at": "2026-09-28T05:55:29.444533+00:00",
+      "action": "patch",
+      "changes": [
+        "INTERVIEW_ANALYSIS_API_KEY=<configured>",
+        "INTERVIEW_ANALYSIS_BASE_URL=https://api.deepseek.com",
+        "INTERVIEW_ANALYSIS_MODEL=deepseek-v4-flash"
+      ],
+      "method": "kubectl-patch",
+      "status": "success",
+      "note": "Configured backend interview report analysis provider; public URL and app identity preserved."
+    },
+    {
+      "at": "2026-09-28T06:26:02.054916+00:00",
+      "action": "set-image",
+      "previous_image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:99f8aaa8234c6a40a44e20d4c85090cde5746523ac716a369eaf6cb262be276e",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f39718731b74e86b9bdc3df12ec4ce546a6ebd2a88dcff0c1b1514af23e857de",
+      "method": "kubectl-set-image",
+      "status": "success",
+      "note": "Fix long-answer ASR turn boundary so partial recognition cannot submit a prefix to Dify."
+    }
+  ]
+}

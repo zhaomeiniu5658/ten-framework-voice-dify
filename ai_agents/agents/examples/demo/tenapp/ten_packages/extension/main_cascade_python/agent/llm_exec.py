@@ -112,10 +112,9 @@ class LLMExec:
                 await self.current_task
             except asyncio.CancelledError:
                 self.ten_env.log_info("LLMExec processing cancelled.")
-                text = self.current_text
                 self.current_text = None
-                if self.on_response and text:
-                    await self.on_response(self.ten_env, "", text, True)
+                # An aborted response must not emit a normal completion:
+                # its trailing TTS chunk could arrive after the TTS flush.
             except Exception as e:
                 self.ten_env.log_error(
                     f"Error processing input queue: {traceback.format_exc()}"

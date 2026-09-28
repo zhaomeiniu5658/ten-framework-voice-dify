@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-09-28T05:43:09.679773+00:00",
+  "base_url": "http://101.200.145.196:8888/v1",
+  "app_id": "5ae02cbc-f213-4710-8c3a-009b8b105489",
+  "app_name": "AI面试",
+  "configured_key_matches_app": true,
+  "draft_opening_statement": "",
+  "published_opening_statement": "我是今天的AI面试官，您准备好了就开始。",
+  "draft_changed": false,
+  "published_changed": false
+}

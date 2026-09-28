@@ -22,6 +22,35 @@ def _normalize_for_duplicate_check(text: str) -> str:
     return re.sub(r"[\s*_`#>\-—:：|]+", "", text)
 
 
+def _normalize_end_query(text: str) -> str:
+    return re.sub(r"[\W_]+", "", text)
+
+
+def _is_interview_end_query(text: str) -> bool:
+    normalized = _normalize_end_query(text)
+    return any(
+        re.fullmatch(pattern, normalized)
+        for pattern in (
+            r"(?:好|好的|那好|嗯|行|可以|谢谢|感谢)?(?:今天)?(?:面试|访谈)?(?:到这里|先到这里)(?:了|吧|一下)?",
+            r"(?:我想|请|现在)?(?:结束|停止|先到这里|不聊了|退出)(?:面试|访谈)?(?:吧|一下)?",
+            r"(?:拜拜|再见|回头见|下次见)(?:了)?",
+        )
+    )
+
+
+def _is_empty_placeholder(text: str) -> bool:
+    normalized = _normalize_end_query(text)
+    return normalized in {"无内容", "没有内容", "暂无内容"}
+
+
+def _may_be_empty_placeholder(text: str) -> bool:
+    normalized = _normalize_end_query(text)
+    return any(
+        word.startswith(normalized)
+        for word in ("无内容", "没有内容", "暂无内容")
+    )
+
+
 def _remove_consecutive_duplicate_sentences(text: str) -> str:
     pieces = re.findall(r"[^。！？!?]+[。！？!?]?", text)
     result: list[str] = []
@@ -169,9 +198,6 @@ class DifyChatClient:
         Map LLMRequest -> Dify /chat-messages streaming API.
         Emit LLMResponseMessageDelta and LLMResponseMessageDone, mirroring the OpenAI LLM2 sample.
         """
-        await self._ensure_session()
-        assert self._session is not None
-
         # Dify takes a single "query" string. We choose the latest user message text for parity with your old code.
         query_text = ""
         for m in reversed(request_input.messages or []):
@@ -200,16 +226,19 @@ class DifyChatClient:
 
         # The question-only Chatflow has no progress variables. The business
         # transport handles explicit completion before asking another question.
-        end_query = re.sub(r"[\s，。！？,.!?]", "", query_text)
-        if self.config.opening_delivered and re.fullmatch(
-            r"(?:我想|请|现在)?(?:结束|停止|先到这里|不聊了|退出)(?:面试|访谈)?(?:吧|一下)?",
-            end_query,
+        if self.config.opening_delivered and _is_interview_end_query(
+            query_text
         ):
             yield LLMResponseMessageDone(
-                response_id="", role="assistant",
-                content="[[INTERVIEW_COMPLETED]]", created=0,
+                response_id="",
+                role="assistant",
+                content="[[INTERVIEW_COMPLETED]]",
+                created=0,
             )
             return
+
+        await self._ensure_session()
+        assert self._session is not None
 
         # NOTE: Dify does not support tool calls in this endpoint; we ignore tools/messages of function types.
         # Keep behavior symmetrical with your OpenAI extension: we only stream assistant text.
@@ -223,7 +252,8 @@ class DifyChatClient:
         payload = {
             "inputs": (
                 {"opening_delivered": "true"}
-                if self.config.opening_delivered else {}
+                if self.config.opening_delivered
+                else {}
             ),
             "query": query_text,
             "response_mode": "streaming",
@@ -300,6 +330,11 @@ class DifyChatClient:
                     response_id = str(evt.get("id") or response_id)
                     created = int(evt.get("created_at") or created)
                     visible_content = _strip_thinking_blocks(full_content)
+                    if (
+                        self.config.opening_delivered
+                        and _may_be_empty_placeholder(visible_content)
+                    ):
+                        continue
                     if _is_evaluation_report(visible_content):
                         suppress_stream = True
                         continue
@@ -332,12 +367,22 @@ class DifyChatClient:
         full_content = _sanitize_interview_answer(
             _dedupe_repeated_answer(_strip_thinking_blocks(full_content))
         )
+        if self.config.opening_delivered and (
+            not full_content or _is_empty_placeholder(full_content)
+        ):
+            # Missing model output is not evidence that the user ended the
+            # interview. Only an explicit end request emits the control signal.
+            full_content = "抱歉，刚才没有收到有效回复，请再说一遍。"
         normalized_final = _normalize_for_duplicate_check(full_content)
         normalized_streamed = _normalize_for_duplicate_check(streamed_content)
         tail_delta = ""
         if full_content.startswith(streamed_content):
             tail_delta = full_content[len(streamed_content) :]
-        if full_content and normalized_final != normalized_streamed and tail_delta:
+        if (
+            full_content
+            and normalized_final != normalized_streamed
+            and tail_delta
+        ):
             yield LLMResponseMessageDelta(
                 response_id=response_id,
                 role="assistant",
@@ -345,10 +390,6 @@ class DifyChatClient:
                 delta=tail_delta,
                 created=created,
             )
-
-        # A transport-only control signal is intercepted before chat/TTS.
-        if not full_content and self.config.opening_delivered:
-            full_content = "[[INTERVIEW_COMPLETED]]"
 
         # Emit the terminal message (even if empty) to mirror OpenAI sample
         yield LLMResponseMessageDone(

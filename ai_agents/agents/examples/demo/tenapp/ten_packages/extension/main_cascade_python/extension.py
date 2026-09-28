@@ -45,6 +45,7 @@ class MainControlExtension(AsyncExtension):
         self._pending_user_text: str = ""
         self._pending_user_stream_id: int | None = None
         self._pending_user_commit_task: asyncio.Task | None = None
+        self._interview_completed: bool = False
 
     def _current_metadata(self) -> dict:
         return {"session_id": self.session_id, "turn_id": self.turn_id}
@@ -85,6 +86,8 @@ class MainControlExtension(AsyncExtension):
 
     @agent_event_handler(ASRResultEvent)
     async def _on_asr_result(self, event: ASRResultEvent):
+        if self._interview_completed:
+            return
         self.session_id = event.metadata.get("session_id", "100")
         stream_id = int(self.session_id)
         text = (event.text or "").strip()
@@ -103,20 +106,34 @@ class MainControlExtension(AsyncExtension):
             self._schedule_pending_user_commit()
             return
 
-        if not self.config.interrupt_on_partial and self._pending_user_text:
-            # Continuing speech postpones submission of the preceding segment.
-            self._schedule_pending_user_commit()
+        # A partial result is unfinished speech, not a silence boundary. ASR
+        # can take longer than the debounce interval to finalize the tail of
+        # a long answer. Wait for that final result before starting the timer;
+        # otherwise only the already-confirmed prefix reaches the LLM.
+        self._cancel_pending_user_commit()
 
         transcript_text = self._merge_user_text(self._pending_user_text, text)
         await self._send_transcript("user", transcript_text, False, stream_id)
 
     @agent_event_handler(LLMResponseEvent)
     async def _on_llm_response(self, event: LLMResponseEvent):
+        if self._interview_completed:
+            return
         if event.text == "[[INTERVIEW_COMPLETED]]":
             self.sentence_fragment = ""
             if event.is_final:
+                self._interview_completed = True
+                self._cancel_pending_user_commit()
+                self._pending_user_text = ""
+                self._pending_user_stream_id = None
+                farewell = "好的，本次面试已结束。我们将根据已完成的问答生成分析报告，您可以点击查看面试报告。"
+                await self._send_to_tts(farewell, True)
+                await self._send_transcript("assistant", farewell, True, 100)
                 await self._send_transcript(
-                    "assistant", "completed", True, 100,
+                    "assistant",
+                    "completed",
+                    True,
+                    100,
                     data_type="interview_completed",
                 )
             return
@@ -182,7 +199,11 @@ class MainControlExtension(AsyncExtension):
                 "message",
                 "message_collector",
                 {
-                    "data_type": "interview_completed" if data_type == "interview_completed" else "transcribe",
+                    "data_type": (
+                        "interview_completed"
+                        if data_type == "interview_completed"
+                        else "transcribe"
+                    ),
                     "role": role,
                     "text": text,
                     "text_ts": int(time.time() * 1000),
@@ -235,12 +256,16 @@ class MainControlExtension(AsyncExtension):
             f"[MainControlExtension] Sent to TTS: is_final={is_final}, text={text}"
         )
 
-    def _schedule_pending_user_commit(self):
+    def _cancel_pending_user_commit(self):
         if (
             self._pending_user_commit_task
             and not self._pending_user_commit_task.done()
         ):
             self._pending_user_commit_task.cancel()
+        self._pending_user_commit_task = None
+
+    def _schedule_pending_user_commit(self):
+        self._cancel_pending_user_commit()
         self._pending_user_commit_task = asyncio.create_task(
             self._commit_pending_user_input()
         )
@@ -255,6 +280,9 @@ class MainControlExtension(AsyncExtension):
             if not text:
                 return
 
+            # Once submission starts, a new ASR event must not cancel it in
+            # the middle of flushing playback and lose the extracted text.
+            self._pending_user_commit_task = None
             self._pending_user_text = ""
             self._pending_user_stream_id = None
             if not self.config.interrupt_on_partial:

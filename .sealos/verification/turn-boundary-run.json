@@ -1,0 +1,5 @@
+{
+  "log": "/Users/zhaoy/.sealos/logs/deploy-20260928-140939.log",
+  "imageTag": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview:turn-boundary-20260928-141054",
+  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f39718731b74e86b9bdc3df12ec4ce546a6ebd2a88dcff0c1b1514af23e857de"
+}
