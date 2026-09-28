@@ -17,26 +17,66 @@ from dify_llm2_python.dify import (
     _is_interview_end_query,
 )
 
+END_QUERIES = (
+    "那次是方案调整了 AE 分级判定标准，涉及12家中心。"
+    "我先把修订点提炼成一页对比清单。好了，今天面试到此结束吧。",
+    "今天的面试到此结束。",
+    "面试就到这吧，拜拜。",
+    "有的，有变化，有很大的变化。好的，我们今天面试到这里吧。",
+    "好的，今天面试到这里吧。",
+    "结束面试",
+    "面试结束",
+    "请结束面试",
+    "我想结束面试了",
+    "我们结束今天的面试吧",
+    "今天的面试就到这里吧",
+    "好了今天面试到此结束吧",
+    "现在结束面试吧",
+    "这次访谈先到这儿吧",
+    "本次面试到此结束",
+    "好的，我们今天的面试就到这里吧，谢谢。",
+    "追回进度了，今天的面试到此结束，谢谢您。",
+    "先到这里",
+    "今天就到这里吧",
+    "就到这吧",
+    "不聊了",
+    "停止面试",
+    "退出面试",
+    "拜拜。",
+    "再见",
+)
+
+CONTINUE_QUERIES = (
+    "我先把这个问题说完",
+    "不要结束面试",
+    "今天的面试不要到此结束",
+    "我不想结束面试",
+    "还不能结束面试",
+    "面试结束了吗",
+    "面试结束后能出报告吗",
+    "项目结束后我做了复盘",
+    "我对同事说了再见，然后继续整理记录",
+    "项目结束后我们今天继续面试",
+    "负责人说，今天的面试到此结束。",
+    "我曾说过，结束面试。",
+    "我对同事说：今天面试到此结束。",
+    "我引用了“今天的面试到此结束”。",
+    "结束面试，不对，继续。",
+    "结束面试。我还想补充一个例子。",
+    "我负责的部分先到这里，下面还有补充。",
+    "今天的面试很有价值，谢谢。",
+    "谢谢",
+)
+
 
 class DifyEndHandlingTests(unittest.TestCase):
     def test_explicit_end_phrases(self):
-        for text in (
-            "好的，今天面试到这里吧。",
-            "结束面试",
-            "先到这里",
-            "拜拜。",
-            "再见",
-        ):
+        for text in END_QUERIES:
             with self.subTest(text=text):
                 self.assertTrue(_is_interview_end_query(text))
 
     def test_normal_answer_is_not_treated_as_end(self):
-        for text in (
-            "我先把这个问题说完",
-            "不要结束面试",
-            "项目结束后我做了复盘",
-            "我对同事说了再见，然后继续整理记录",
-        ):
+        for text in CONTINUE_QUERIES:
             with self.subTest(text=text):
                 self.assertFalse(_is_interview_end_query(text))
 
@@ -49,7 +89,8 @@ class DifyEndHandlingTests(unittest.TestCase):
 class DifyStreamingEndTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.client = DifyChatClient(
-            Mock(), DifyLLM2Config(opening_delivered=True)
+            Mock(),
+            DifyLLM2Config.model_validate_json('{"opening_delivered": true}'),
         )
         self.client._ensure_session = AsyncMock()
 
@@ -74,7 +115,7 @@ class DifyStreamingEndTests(unittest.IsolatedAsyncioTestCase):
         self.client._session.post.return_value = context
 
     async def test_explicit_end_needs_no_dify_request(self):
-        for text in ("好的，今天面试到这里吧。", "结束面试", "拜拜。"):
+        for text in END_QUERIES:
             with self.subTest(text=text):
                 responses = await self.responses(text)
                 self.assertEqual(len(responses), 1)
@@ -83,6 +124,14 @@ class DifyStreamingEndTests(unittest.IsolatedAsyncioTestCase):
                     responses[0].content, "[[INTERVIEW_COMPLETED]]"
                 )
         self.client._ensure_session.assert_not_awaited()
+
+    async def test_negative_and_reported_phrases_still_go_to_dify(self):
+        for text in CONTINUE_QUERIES:
+            with self.subTest(text=text):
+                self.mock_stream(["请继续介绍。"])
+                responses = await self.responses(text)
+                self.assertEqual(responses[-1].content, "请继续介绍。")
+                self.client._session.post.assert_called_once()
 
     async def test_empty_or_chunked_placeholder_has_one_spoken_fallback(self):
         for chunks in ([], ["（", "无", "内容", "）"], ["暂无", "内容"]):

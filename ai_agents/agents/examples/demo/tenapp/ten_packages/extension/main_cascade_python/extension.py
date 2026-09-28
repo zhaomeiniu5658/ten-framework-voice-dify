@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 import time
 from typing import Literal
 
@@ -272,7 +273,11 @@ class MainControlExtension(AsyncExtension):
 
     async def _commit_pending_user_input(self):
         try:
-            debounce_seconds = max(self.config.asr_final_debounce_ms, 0) / 1000
+            delay_ms = max(self.config.asr_final_debounce_ms, 0)
+            normalized = re.sub(r"[\W_]", "", self._pending_user_text)
+            if len(normalized) <= 12:
+                delay_ms = max(delay_ms, self.config.asr_short_answer_debounce_ms)
+            debounce_seconds = delay_ms / 1000
             await asyncio.sleep(debounce_seconds)
 
             text = self._pending_user_text.strip()
@@ -285,6 +290,16 @@ class MainControlExtension(AsyncExtension):
             self._pending_user_commit_task = None
             self._pending_user_text = ""
             self._pending_user_stream_id = None
+            # Preserve the transcript, but acknowledgements alone do not answer
+            # an interview question and must not flush audio or request a new one.
+            normalized = re.sub(r"[\W_]", "", text).lower()
+            if self.config.ignore_acknowledgements and re.fullmatch(
+                r"(?:嗯+|呃+|啊+|哦+|噢+|好的?[哦啊呀呢吧]?|ok|okay)", normalized
+            ):
+                await self._send_transcript(
+                    "user", text, True, stream_id or int(self.session_id)
+                )
+                return
             if not self.config.interrupt_on_partial:
                 await self._interrupt()
             self.turn_id += 1

@@ -8,3 +8,5 @@ class MainControlConfig(BaseModel):
     # False waits for confirmed, debounced input before stopping playback.
     interrupt_on_partial: bool = True
     report_tts_summary: str = ""
+    ignore_acknowledgements: bool = False
+    asr_short_answer_debounce_ms: int = 0

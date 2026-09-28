@@ -1,0 +1,122 @@
+{
+  "tool": "sealos-log-scan",
+  "generatedAt": "2026-09-28T07:29:38.832Z",
+  "namespace": "ns-udky0j90",
+  "app": "ten-voice-ai-interview-pqehcrgg",
+  "since": "10m",
+  "tail": 300,
+  "minWindowSeconds": 60,
+  "baseline": {
+    "provided": false,
+    "generatedAt": null,
+    "elapsedSeconds": null,
+    "complete": false
+  },
+  "ok": true,
+  "dryRun": false,
+  "pods": [
+    {
+      "uid": "aebee22a-e32e-42de-885c-7207327b4c4c",
+      "name": "ten-voice-ai-interview-pqehcrgg-679965c5f8-hhkbd",
+      "phase": "Running",
+      "ready": true,
+      "completed": false,
+      "failed": false,
+      "lifecycle": "Running",
+      "ownerKind": null,
+      "readyTransitionTime": "2026-09-28T07:28:54Z",
+      "restartCount": 0,
+      "restartDelta": 0,
+      "replaced": false,
+      "readyTransitionChanged": false,
+      "labels": {
+        "app": "ten-voice-ai-interview-pqehcrgg",
+        "pod-template-hash": "679965c5f8"
+      },
+      "containers": [
+        {
+          "name": "ten-voice-ai-interview-pqehcrgg",
+          "type": "main",
+          "ready": true,
+          "restartCount": 0,
+          "state": {
+            "running": {
+              "startedAt": "2026-09-28T07:28:31Z"
+            }
+          },
+          "lastState": {},
+          "completionTime": null,
+          "exitCode": null,
+          "terminationReason": null,
+          "historicalCompletedInit": false,
+          "statusSignals": [],
+          "streams": [
+            {
+              "name": "current",
+              "ok": true,
+              "lineCount": 31,
+              "signals": [
+                {
+                  "id": "warning",
+                  "count": 3,
+                  "examples": [
+                    {
+                      "line": 6,
+                      "text": "[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached."
+                    },
+                    {
+                      "line": 8,
+                      "text": "[GIN-debug] [WARNING] Running in \"debug\" mode. Switch to \"release\" mode in production."
+                    },
+                    {
+                      "line": 24,
+                      "text": "[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value."
+                    }
+                  ]
+                }
+              ],
+              "error": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": [],
+  "eventSummary": {
+    "observed": 0,
+    "historical-transient": 0,
+    "active-failure": 0
+  },
+  "findings": [],
+  "observations": [
+    {
+      "source": "log",
+      "pod": "ten-voice-ai-interview-pqehcrgg-679965c5f8-hhkbd",
+      "container": "ten-voice-ai-interview-pqehcrgg",
+      "containerType": "main",
+      "stream": "current",
+      "signal": "warning",
+      "count": 3,
+      "delta": null,
+      "rule": "startup-warning",
+      "reason": "warning signal observed in the log stream",
+      "historicalCompletedInit": false,
+      "examples": [
+        {
+          "line": 6,
+          "text": "[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached."
+        },
+        {
+          "line": 8,
+          "text": "[GIN-debug] [WARNING] Running in \"debug\" mode. Switch to \"release\" mode in production."
+        },
+        {
+          "line": 24,
+          "text": "[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value."
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

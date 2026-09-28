@@ -39,6 +39,8 @@
         "interrupt_on_partial": {
           "type": "bool"
         },
+        "ignore_acknowledgements": { "type": "bool" },
+        "asr_short_answer_debounce_ms": { "type": "int32" },
         "report_tts_summary": {
           "type": "string"
         }

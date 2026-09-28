@@ -81,7 +81,7 @@ export default function InterviewReportDialog() {
   const download = () => {
     const url = URL.createObjectURL(new Blob([report?.markdown || ""], { type: "text/markdown;charset=utf-8" }));
     const anchor = document.createElement("a");
-    anchor.href = url; anchor.download = "临床PM-AI面试分析报告.md"; anchor.click(); URL.revokeObjectURL(url);
+    anchor.href = url; anchor.download = "管理个性V2-面试评估报告.md"; anchor.click(); URL.revokeObjectURL(url);
   };
   return <>
     <Button variant="outline" size="sm" onClick={() => setOpen(true)} className="gap-2 whitespace-nowrap">
@@ -91,8 +91,8 @@ export default function InterviewReportDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="flex max-h-[90vh] w-[95vw] max-w-5xl flex-col overflow-hidden p-0">
         <DialogHeader className="shrink-0 border-b border-border px-6 py-5 pr-12">
-          <DialogTitle>面试分析报告</DialogTitle>
-          <DialogDescription>临床项目经理 · 五方面 / 20 维度 · 基于简历与面试行为证据</DialogDescription>
+          <DialogTitle>管理个性V2面试评估报告</DialogTitle>
+          <DialogDescription>五方面 / 20 维度 · 基于面试行为证据 · 非正式测评</DialogDescription>
         </DialogHeader>
         <div className="min-h-0 flex-1 overflow-auto px-6 py-5" aria-live="polite">
           {report?.status === "ready" && report.markdown ? <ReportMarkdown text={report.markdown} /> :

@@ -1,0 +1,15 @@
+{
+  "logFile": "/Users/zhaoy/.sealos/logs/deploy-20260928-152056.log",
+  "startedAt": "2026-09-28T07:20:56.673393+00:00",
+  "stamp": "20260928-152056",
+  "namespace": "ns-udky0j90",
+  "app": "ten-voice-ai-interview-pqehcrgg",
+  "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
+  "imageTag": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview:closing-phrases-20260928-152056",
+  "previousImage": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:9396bba010c3246bf0d905d5732cd0419cd5d6c2039a61ec5df5323dfb520f94",
+  "oldPod": "ten-voice-ai-interview-pqehcrgg-7bd5b4f95f-jxw2k",
+  "reportBackup": "/Users/zhaoy/.sealos/backups/closing-phrases-20260928-152056.tar",
+  "reportCount": 7,
+  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f95a2e45f03dec29cbd667723b0e2c580054f1858d686d1107dded905d4389cc",
+  "newPod": "ten-voice-ai-interview-pqehcrgg-679965c5f8-hhkbd"
+}

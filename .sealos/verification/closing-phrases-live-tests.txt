@@ -1,0 +1,6 @@
+................
+----------------------------------------------------------------------
+Ran 16 tests in 0.595s
+
+OK
+{"closingUtterances": 25, "negativeCases": 19, "allPass": true, "retainsFinalAnswer": true, "completionEventCountPerSession": 1, "requiresDisconnect": false}

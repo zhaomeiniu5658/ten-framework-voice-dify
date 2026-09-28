@@ -1,0 +1,12 @@
+{
+  "hashes": {
+    "/app/agents/ten_packages/extension/dify_llm2_python/dify.py": "4649dffd98fa7968e805903ccf69d62efd0eceb407c0df12dfbe193cd4a08dbc",
+    "/app/agents/examples/demo/tenapp/ten_packages/extension/main_cascade_python/extension.py": "93726282635bea7064c8ea4cfeb792788a6503df23006fc3431695db8c4da507"
+  },
+  "analysisConfigured": true,
+  "difyTargetCorrect": true,
+  "difyHttpStatus": 200,
+  "sourceHashesMatch": true,
+  "recordsPreserved": 5,
+  "readyReportsVerified": 2
+}

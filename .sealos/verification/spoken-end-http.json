@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
+  "loginMethod": null,
+  "tokenPath": null,
+  "error": null,
+  "findings": [],
+  "credentials": null,
+  "steps": [
+    {
+      "name": "root",
+      "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site/",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 158,
+      "contentType": "text/html; charset=utf-8",
+      "location": null,
+      "setCookie": null,
+      "bodyPreview": "<!DOCTYPE html><!--HJotac1b56spqwxHQWVFV--><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no\"/><link rel=\"",
+      "failureSignals": [],
+      "json": null
+    },
+    {
+      "name": "missing-api:/api/interviews/00000000-0000-0000-0000-000000000000",
+      "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site/api/interviews/00000000-0000-0000-0000-000000000000",
+      "status": 404,
+      "ok": true,
+      "elapsedMs": 50,
+      "contentType": "application/json",
+      "location": null,
+      "setCookie": null,
+      "bodyPreview": "{\"error\":\"面试记录不存在\"}",
+      "failureSignals": [],
+      "json": {
+        "error": "面试记录不存在"
+      },
+      "probeType": "api",
+      "expected": 404,
+      "probeFailure": null
+    }
+  ]
+}

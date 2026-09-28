@@ -27,14 +27,50 @@ def _normalize_end_query(text: str) -> str:
 
 
 def _is_interview_end_query(text: str) -> bool:
-    normalized = _normalize_end_query(text)
-    return any(
-        re.fullmatch(pattern, normalized)
-        for pattern in (
-            r"(?:好|好的|那好|嗯|行|可以|谢谢|感谢)?(?:今天)?(?:面试|访谈)?(?:到这里|先到这里)(?:了|吧|一下)?",
-            r"(?:我想|请|现在)?(?:结束|停止|先到这里|不聊了|退出)(?:面试|访谈)?(?:吧|一下)?",
-            r"(?:拜拜|再见|回头见|下次见)(?:了)?",
+    # Keep clause boundaries: an ASR turn can contain a final answer followed
+    # by a closing command. A suffix search after stripping punctuation would
+    # also match negated or quoted mentions of that command.
+    text = re.sub(r'“[^”]*”|「[^」]*」|"[^"]*"', "引用", text)
+    clauses = [
+        _normalize_end_query(clause)
+        for clause in re.split(r"[，,。.!！?？;；\n]+", text)
+        if _normalize_end_query(clause)
+    ]
+    # A trailing courtesy should not hide the command before it, but a
+    # correction such as "结束面试，不对，继续" must not end the session.
+    while clauses and clauses[-1] in {
+        "谢谢",
+        "谢谢你",
+        "谢谢您",
+        "谢谢配合",
+        "感谢",
+        "辛苦了",
+    }:
+        clauses.pop()
+    if not clauses:
+        return False
+    if len(clauses) > 1 and re.search(
+        r"(?:说|说了|说过|说道|问|表示|告诉我|告诉他|写着)$", clauses[-2]
+    ):
+        return False
+
+    lead = r"(?:好(?:的|了)?|那(?:好|么)?|嗯|行|可以|谢谢|感谢)*"
+    subject = r"(?:(?:我们|咱们|我)(?:想要|想|要|希望|决定)?|请)?"
+    when = r"(?:(?:今天|现在|本次|这次)(?:的)?)?"
+    topic = r"(?:面试|访谈)"
+    boundary = r"到(?:这里|这儿|这|此)(?:结束)?"
+    closing = (
+        rf"(?:{topic}(?:就|先)?(?:{boundary}|结束|停止)"
+        rf"|(?:就|先)?(?:结束|停止|退出){when}{topic}?"
+        rf"|(?:就|先)?{boundary}|不聊了"
+        rf"|拜拜|拜拜拜拜|再见|回头见|下次见)"
+    )
+    return (
+        re.fullmatch(
+            lead + subject + when + closing + r"(?:了|吧|一下|啦)?",
+            clauses[-1],
         )
+        is not None
     )
 
 

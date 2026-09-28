@@ -1,33 +1,33 @@
 {
-  "generatedAt": "2026-09-28T06:26:28.745942+00:00",
+  "generatedAt": "2026-09-28T07:33:29.722939+00:00",
   "terminalState": "success",
   "workloadClass": "public-web",
   "namespace": "ns-udky0j90",
   "app": "ten-voice-ai-interview-pqehcrgg",
   "publicUrl": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
-  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f39718731b74e86b9bdc3df12ec4ce546a6ebd2a88dcff0c1b1514af23e857de",
+  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f95a2e45f03dec29cbd667723b0e2c580054f1858d686d1107dded905d4389cc",
   "runtimeReady": true,
   "collectionOk": true,
   "redaction": "complete",
-  "firstScanAt": "2026-09-28T06:22:50.503Z",
-  "finalScanAt": "2026-09-28T06:24:17.633Z",
-  "stabilityWindowSeconds": 87.13,
+  "stabilityWindowSeconds": 60,
   "evidence": {
-    "footprint": ".sealos/verification/turn-boundary-footprint.json",
-    "launchpad": ".sealos/verification/turn-boundary-network.json",
-    "httpSmoke": ".sealos/verification/turn-boundary-http.json",
-    "functional": ".sealos/verification/turn-boundary-live-tests.txt",
-    "sourceVerification": ".sealos/verification/turn-boundary-source.json",
-    "stability": ".sealos/verification/turn-boundary-final.json",
-    "reportRestore": ".sealos/verification/turn-boundary-records.json"
+    "network": ".sealos/verification/closing-phrases-network.json",
+    "http": ".sealos/verification/closing-phrases-http.json",
+    "functional": ".sealos/verification/closing-phrases-functional.json",
+    "footprint": ".sealos/verification/closing-phrases-footprint.json",
+    "baseline": ".sealos/verification/closing-phrases-baseline.json",
+    "final": ".sealos/verification/closing-phrases-final.json"
   },
   "functionalResult": {
-    "liveImageRegressionTests": 7,
-    "sourceMatches": true,
-    "restoredReports": 3
+    "closingUtterancesTested": 25,
+    "negativeCasesTested": 19,
+    "requiresDisconnect": false,
+    "sourceHashesMatch": true,
+    "recordsPreserved": 7,
+    "readyReportsVerified": 4,
+    "difyHttpStatus": 200
   },
   "limitations": [
-    "Long-answer ASR timing was reproduced in automated tests inside the deployed image; no new live microphone-to-speaker session was performed.",
-    "Interview records still use ephemeral storage; this rollout backed up and restored existing records."
+    "浏览器麦克风端未再次人工操作；已在远程新容器用截图中的完整转写和 ASR 测试覆盖。"
   ]
 }

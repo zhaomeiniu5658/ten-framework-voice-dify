@@ -60,6 +60,33 @@ class InterruptionTests(unittest.IsolatedAsyncioTestCase):
             "我喜欢独处"
         )
 
+    async def test_interview_acknowledgements_never_interrupt_or_ask(self):
+        self.control.config.ignore_acknowledgements = True
+        for text in ["嗯", "好的哦。", "哦", "OK"]:
+            await self.send(text, final=True)
+            await self.control._pending_user_commit_task
+        self.control._interrupt.assert_not_awaited()
+        self.control.agent.queue_llm_input.assert_not_awaited()
+
+    async def test_meaningful_short_answer_and_end_are_not_filtered(self):
+        self.control.config.ignore_acknowledgements = True
+        for text in ["没有", "三个月", "结束面试"]:
+            await self.send(text, final=True)
+            await self.control._pending_user_commit_task
+        self.assertEqual(self.control.agent.queue_llm_input.await_count, 3)
+
+    async def test_short_fragment_waits_longer_and_merges_continuation(self):
+        self.control.config.ignore_acknowledgements = True
+        self.control.config.asr_short_answer_debounce_ms = 150
+        await self.send("第一步是查。", final=True)
+        await asyncio.sleep(0.07)
+        self.control.agent.queue_llm_input.assert_not_awaited()
+        await self.send("医院系统里的用药记录。", final=True)
+        await self.control._pending_user_commit_task
+        self.control.agent.queue_llm_input.assert_awaited_once_with(
+            "第一步是查。医院系统里的用药记录。"
+        )
+
     async def test_default_keeps_other_graphs_behavior(self):
         self.control.config = MainControlConfig(asr_final_debounce_ms=40)
         await self.send("我喜欢独处")
@@ -134,6 +161,8 @@ class InterruptionTests(unittest.IsolatedAsyncioTestCase):
         self,
     ):
         self.control._send_to_tts = AsyncMock()
+        await self.send("尚未提交的迟到语音", final=True)
+        pending = self.control._pending_user_commit_task
         await self.control._on_llm_response(
             LLMResponseEvent(
                 delta="",
@@ -141,7 +170,10 @@ class InterruptionTests(unittest.IsolatedAsyncioTestCase):
                 is_final=True,
             )
         )
+        await asyncio.sleep(0)
         self.assertTrue(self.control._interview_completed)
+        self.assertTrue(pending.cancelled())
+        self.assertEqual(self.control._pending_user_text, "")
         self.control._send_to_tts.assert_awaited_once()
         self.assertTrue(
             self.control._send_to_tts.await_args.args[0].startswith(
@@ -155,6 +187,13 @@ class InterruptionTests(unittest.IsolatedAsyncioTestCase):
             if call.kwargs.get("data_type") == "interview_completed"
         ]
         self.assertEqual(len(completed), 1)
+        await self.control._on_llm_response(
+            LLMResponseEvent(
+                delta="", text="[[INTERVIEW_COMPLETED]]", is_final=True
+            )
+        )
+        self.control._send_to_tts.assert_awaited_once()
+        self.control.agent.queue_llm_input.assert_not_awaited()
 
     async def test_completed_interview_ignores_late_speech(self):
         self.control._interview_completed = True

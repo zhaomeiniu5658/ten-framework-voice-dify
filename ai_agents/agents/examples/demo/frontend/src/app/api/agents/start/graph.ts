@@ -349,7 +349,10 @@ export const getGraphProperties = (
       main_control: {
         greeting: CLINICAL_PM_AGENT_GREETING,
         interrupt_on_partial: false,
-        asr_final_debounce_ms: 900,
+        // Give the candidate 400ms more silence before committing a turn.
+        asr_final_debounce_ms: 3000,
+        asr_short_answer_debounce_ms: 5500,
+        ignore_acknowledgements: true,
         report_tts_summary: "",
       },
       tts: {

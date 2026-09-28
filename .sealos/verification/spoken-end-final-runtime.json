@@ -1,0 +1,106 @@
+{
+  "tool": "sealos-log-scan",
+  "generatedAt": "2026-09-28T07:10:14.790Z",
+  "namespace": "ns-udky0j90",
+  "app": "ten-voice-ai-interview-pqehcrgg",
+  "since": "10m",
+  "tail": 300,
+  "minWindowSeconds": 60,
+  "baseline": {
+    "provided": true,
+    "generatedAt": "2026-09-28T07:07:42.924Z",
+    "elapsedSeconds": 151,
+    "complete": true
+  },
+  "ok": true,
+  "dryRun": false,
+  "pods": [
+    {
+      "uid": "0e9ef0c6-bd14-4cb2-9f29-27eb29c95162",
+      "name": "ten-voice-ai-interview-pqehcrgg-7bd5b4f95f-jxw2k",
+      "phase": "Running",
+      "ready": true,
+      "completed": false,
+      "failed": false,
+      "lifecycle": "Running",
+      "ownerKind": null,
+      "readyTransitionTime": "2026-09-28T07:06:46Z",
+      "restartCount": 0,
+      "restartDelta": 0,
+      "replaced": false,
+      "readyTransitionChanged": false,
+      "labels": {
+        "app": "ten-voice-ai-interview-pqehcrgg",
+        "pod-template-hash": "7bd5b4f95f"
+      },
+      "containers": [
+        {
+          "name": "ten-voice-ai-interview-pqehcrgg",
+          "type": "main",
+          "ready": true,
+          "restartCount": 0,
+          "state": {
+            "running": {
+              "startedAt": "2026-09-28T07:06:23Z"
+            }
+          },
+          "lastState": {},
+          "completionTime": null,
+          "exitCode": null,
+          "terminationReason": null,
+          "historicalCompletedInit": false,
+          "statusSignals": [],
+          "streams": [
+            {
+              "name": "current",
+              "ok": true,
+              "lineCount": 5,
+              "signals": [
+                {
+                  "id": "deprecation",
+                  "count": 1,
+                  "examples": [
+                    {
+                      "line": 1,
+                      "text": "(node:50) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead."
+                    }
+                  ]
+                }
+              ],
+              "error": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": [],
+  "eventSummary": {
+    "observed": 0,
+    "historical-transient": 0,
+    "active-failure": 0
+  },
+  "findings": [],
+  "observations": [
+    {
+      "source": "log",
+      "pod": "ten-voice-ai-interview-pqehcrgg-7bd5b4f95f-jxw2k",
+      "container": "ten-voice-ai-interview-pqehcrgg",
+      "containerType": "main",
+      "stream": "current",
+      "signal": "deprecation",
+      "count": 1,
+      "delta": 0,
+      "rule": "stable-log-signal",
+      "reason": "signal count is unchanged after the stability window",
+      "historicalCompletedInit": false,
+      "examples": [
+        {
+          "line": 1,
+          "text": "(node:50) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead."
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

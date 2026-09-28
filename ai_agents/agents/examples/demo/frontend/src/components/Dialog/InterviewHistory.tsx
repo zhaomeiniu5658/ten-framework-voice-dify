@@ -45,7 +45,7 @@ export default function InterviewHistoryDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="flex max-h-[90vh] w-[95vw] max-w-5xl flex-col overflow-hidden">
         <DialogHeader>
-          <DialogTitle>{selected ? "面试分析报告" : "面试记录"}</DialogTitle>
+          <DialogTitle>{selected ? "管理个性V2面试评估报告" : "面试记录"}</DialogTitle>
           <DialogDescription>{selected ? `${date(selected.createdAt)} · ${selected.candidateName}` : "按面试开始时间倒序排列 · 北京时间"}</DialogDescription>
         </DialogHeader>
         <div className="flex gap-2">
