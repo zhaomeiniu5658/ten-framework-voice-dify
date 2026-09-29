@@ -2304,7 +2304,7 @@
               "addon": "main_cascade_python",
               "extension_group": "control",
               "property": {
-                "greeting": "您好，我是今天的 AI 面试官。请你先介绍一下自己。",
+                "greeting": "您好，我是今天的面试官。请你先介绍一下自己。",
                 "asr_final_debounce_ms": 3000,
                 "asr_short_answer_debounce_ms": 5500,
                 "ignore_acknowledgements": true,

@@ -114,6 +114,30 @@ class DifyStreamingEndTests(unittest.IsolatedAsyncioTestCase):
         self.client._session = Mock()
         self.client._session.post.return_value = context
 
+    async def test_first_answer_includes_delivered_opening_context(self):
+        answer = "我姓孙，做过药物CRA，负责临床项目。我的介绍到这里。"
+        self.mock_stream(["请介绍一个你负责的项目。"])
+        await self.responses(answer)
+        payload = self.client._session.post.call_args.kwargs["json"]
+        self.assertIn("面试官已向候选人说过", payload["query"])
+        self.assertTrue(payload["query"].endswith(answer))
+        self.assertNotIn("conversation_id", payload)
+
+    async def test_later_answers_keep_conversation_without_reseeding(self):
+        self.client._conversation_id = "existing-conversation"
+        self.mock_stream(["你是怎么处理的？"])
+        await self.responses("我负责十家中心。")
+        payload = self.client._session.post.call_args.kwargs["json"]
+        self.assertEqual(payload["query"], "我负责十家中心。")
+        self.assertEqual(payload["conversation_id"], "existing-conversation")
+
+    async def test_no_transport_greeting_keeps_query_unchanged(self):
+        self.client.config.opening_delivered = False
+        self.mock_stream(["请介绍一下自己。"])
+        await self.responses("你好")
+        payload = self.client._session.post.call_args.kwargs["json"]
+        self.assertEqual(payload["query"], "你好")
+
     async def test_explicit_end_needs_no_dify_request(self):
         for text in END_QUERIES:
             with self.subTest(text=text):

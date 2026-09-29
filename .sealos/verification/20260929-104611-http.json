@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
+  "loginMethod": null,
+  "tokenPath": null,
+  "error": null,
+  "findings": [],
+  "credentials": null,
+  "steps": [
+    {
+      "name": "root",
+      "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site/",
+      "status": 200,
+      "ok": true,
+      "elapsedMs": 178,
+      "contentType": "text/html; charset=utf-8",
+      "location": null,
+      "setCookie": null,
+      "bodyPreview": "<!DOCTYPE html><!--niC580WVHx4jNkLQqxxRE--><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no\"/><link rel=\"",
+      "failureSignals": [],
+      "json": null
+    }
+  ]
+}

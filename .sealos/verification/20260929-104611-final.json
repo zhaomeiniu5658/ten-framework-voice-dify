@@ -1,0 +1,75 @@
+{
+  "tool": "sealos-log-scan",
+  "generatedAt": "2026-09-29T03:03:05.240Z",
+  "namespace": "ns-udky0j90",
+  "app": "ten-voice-ai-interview-pqehcrgg",
+  "since": "10m",
+  "tail": 200,
+  "minWindowSeconds": 60,
+  "baseline": {
+    "provided": true,
+    "generatedAt": "2026-09-29T03:00:59.976Z",
+    "elapsedSeconds": 125,
+    "complete": true
+  },
+  "ok": true,
+  "dryRun": false,
+  "pods": [
+    {
+      "uid": "13c68d82-eb5c-484d-8ce8-f9d3b6363cd9",
+      "name": "ten-voice-ai-interview-pqehcrgg-5644fdd8f9-2bwmr",
+      "phase": "Running",
+      "ready": true,
+      "completed": false,
+      "failed": false,
+      "lifecycle": "Running",
+      "ownerKind": null,
+      "readyTransitionTime": "2026-09-29T02:58:45Z",
+      "restartCount": 0,
+      "restartDelta": 0,
+      "replaced": false,
+      "readyTransitionChanged": false,
+      "labels": {
+        "app": "ten-voice-ai-interview-pqehcrgg",
+        "pod-template-hash": "5644fdd8f9"
+      },
+      "containers": [
+        {
+          "name": "ten-voice-ai-interview-pqehcrgg",
+          "type": "main",
+          "ready": true,
+          "restartCount": 0,
+          "state": {
+            "running": {
+              "startedAt": "2026-09-29T02:58:21Z"
+            }
+          },
+          "lastState": {},
+          "completionTime": null,
+          "exitCode": null,
+          "terminationReason": null,
+          "historicalCompletedInit": false,
+          "statusSignals": [],
+          "streams": [
+            {
+              "name": "current",
+              "ok": true,
+              "lineCount": 0,
+              "signals": [],
+              "error": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": [],
+  "eventSummary": {
+    "observed": 0,
+    "historical-transient": 0,
+    "active-failure": 0
+  },
+  "findings": [],
+  "observations": [],
+  "errors": []
+}

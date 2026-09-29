@@ -6,7 +6,7 @@ const OPENAI_REALTIME_15_MODEL = "gpt-realtime-1.5";
 const OPENAI_REALTIME_MINI_MODEL = "gpt-realtime-mini";
 const MINIMAX_DEFAULT_PROMPT =
   "Provide short, narrative responses in plain text. Keep answers concise and natural. Do not use emoji, markdown formatting, or special decorative characters.";
-const CLINICAL_PM_AGENT_GREETING = "您好，我是今天的 AI 面试官。请你先介绍一下自己。";
+const CLINICAL_PM_AGENT_GREETING = "您好，我是今天的面试官。请你先介绍一下自己。";
 
 export const voiceNameMap: LanguageMap = {
   "zh-CN": {

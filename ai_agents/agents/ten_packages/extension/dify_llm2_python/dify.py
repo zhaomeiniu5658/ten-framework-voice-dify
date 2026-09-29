@@ -285,6 +285,18 @@ class DifyChatClient:
                 "请按模拟面试官身份继续。"
             )
 
+        # The transport greeting is outside Dify's conversation history.
+        # Seed that context once; keep the candidate's actual answer intact.
+        if self.config.opening_delivered and not self._conversation_id:
+            query_text = (
+                "【面试衔接上下文】面试官已向候选人说过："
+                "您好，我是今天的面试官。请你先介绍一下自己。\n"
+                "下面是候选人对此的回答。请根据回答继续面试；"
+                "若已提供自我介绍，不要再次要求自我介绍，"
+                "直接针对已提供的经历提出一个具体问题。\n\n"
+                f"【候选人回答】\n{query_text}"
+            )
+
         payload = {
             "inputs": (
                 {"opening_delivered": "true"}
