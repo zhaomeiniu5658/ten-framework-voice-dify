@@ -8,7 +8,7 @@ const root = fs.mkdtempSync(path.join(os.tmpdir(), 'interview-test-'));
 process.env.INTERVIEW_REPORT_DIR = path.join(root, 'records');
 process.env.INTERVIEW_ANALYSIS_API_KEY = 'test-placeholder';
 const source = path.join(__dirname, '../src/lib/interview');
-for (const file of ['report', 'store']) fs.writeFileSync(path.join(root, file + '.js'), ts.transpileModule(fs.readFileSync(path.join(source, file + '.ts'), 'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS, target:ts.ScriptTarget.ES2020, esModuleInterop:true}}).outputText);
+for (const file of ['session', 'report', 'store']) fs.writeFileSync(path.join(root, file + '.js'), ts.transpileModule(fs.readFileSync(path.join(source, file + '.ts'), 'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS, target:ts.ScriptTarget.ES2020, esModuleInterop:true}}).outputText);
 fs.copyFileSync(path.join(source, 'reference.json'), path.join(root, 'reference.json'));
 const store = require(path.join(root, 'store.js'));
 const originalFetch = global.fetch;
@@ -20,13 +20,16 @@ test('interview stays idle until finish, preserves follow-ups and final answer; 
     calls++;
     const payload = JSON.parse(options.body);
     const input = JSON.parse(payload.messages[1].content);
-    assert.match(input.resume, /临床项目经理/);
+    assert.equal(input.resume, '本次临床项目经理简历');
+    assert.equal(input.candidateName, '张敏');
+    assert.ok(input.sessionId);
+    assert.doesNotMatch(options.body, /林予安|北森|Faye Lian/);
     assert.equal(input.transcript.length, 4);
     assert.equal(input.transcript[3].text, '最终改善结果');
     assert.equal(input.transcript[3].evidenceId, 'T4');
     return {ok: true, json: async () => ({choices:[{finish_reason:'stop', message:{content:'# 临床PM AI面试分析报告\n\n## 总体结果\n测试'}}]})};
   };
-  const id = await store.createInterview();
+  const id = await store.createInterview({ name: '张敏', resume: '本次临床项目经理简历' });
   await store.runAnalysis(id);
   assert.equal(calls, 0);
   const transcript = [{role:'assistant',text:'你做了什么？',time:1},{role:'user',text:'我调整了计划',time:2},{role:'assistant',text:'结果如何？',time:3},{role:'user',text:'最终改善结果',time:4}];
@@ -53,7 +56,76 @@ test('history lists separate sessions without exposing transcripts and tolerates
   const history = await store.listInterviews();
   assert.ok(history.some(r => r.id === first));
   assert.ok(history.some(r => r.id === second));
-  assert.equal(history.find(r => r.id === second).candidateName, '林予安（演示候选人）');
+  assert.equal(history.find(r => r.id === second).candidateName, '未提供姓名');
   assert.ok(history.every(r => !('transcript' in r) && !('markdown' in r)));
   assert.deepEqual(history.map(r => r.createdAt), history.map(r => r.createdAt).sort().reverse());
+});
+
+test('empty, greeting-only and end-only interviews complete without analysis or report links', async () => {
+  let calls = 0;
+  global.fetch = async () => { calls++; throw new Error('must not analyze'); };
+  for (const transcript of [[], [{role:'assistant',text:'请介绍自己',time:1}],
+    [{role:'user',text:'结束面试',time:2}], [{role:'user',text:'你好',time:3}]]) {
+    const id = await store.createInterview();
+    await store.finishInterview(id, transcript);
+    await store.runAnalysis(id);
+    const value = await store.readInterview(id);
+    assert.equal(value.status, 'completed');
+    assert.ok(value.endedAt);
+    assert.equal(store.publicReport(value).markdown, undefined);
+    assert.equal((await store.listInterviews()).find(r=>r.id===id).hasReport, false);
+    await store.finishInterview(id, [{role:'user',text:'不能用下一场回答覆盖',time:9}]);
+    assert.deepEqual((await store.readInterview(id)).transcript, transcript);
+  }
+  assert.equal(calls, 0);
+});
+
+test('two candidates and concurrent finish requests keep immutable per-session evidence', async () => {
+  const a = await store.createInterview({name:'张敏',resume:'张敏提供的简历'});
+  const b = await store.createInterview();
+  const ta = [{role:'assistant',text:'你是林予安吗？',time:1},{role:'user',text:'我叫张敏，我负责肿瘤项目。',time:2}];
+  const tb = [{role:'user',text:'我叫李华，我负责器械项目。',time:3}];
+  const inputs = [];
+  global.fetch = async (_url, options) => {
+    const input = JSON.parse(JSON.parse(options.body).messages[1].content);
+    inputs.push(input);
+    return {ok:true,json:async()=>({choices:[{message:{content:`# 临床PM面试评估报告\n${input.candidateName} [T1]`}}]})};
+  };
+  await Promise.all([store.finishInterview(a, ta),store.finishInterview(a, tb),store.finishInterview(b,tb)]);
+  await Promise.all([store.runAnalysis(a),store.runAnalysis(b)]);
+  assert.equal(inputs.find(i=>i.sessionId===a).candidateName,'张敏');
+  assert.equal(inputs.find(i=>i.sessionId===a).resume,'张敏提供的简历');
+  assert.equal(inputs.find(i=>i.sessionId===b).candidateName,'李华');
+  assert.equal(inputs.find(i=>i.sessionId===b).resume,'');
+  assert.deepEqual(inputs.find(i=>i.sessionId===b).transcript.map(t=>t.text),tb.map(t=>t.text));
+  assert.doesNotMatch((await store.readInterview(b)).markdown,/张敏|林予安/);
+});
+
+test('legacy demo reports are not exposed and retries use only their saved transcript', async () => {
+  const id = await store.createInterview();
+  const file = path.join(root,'records',`${id}.json`);
+  const old = JSON.parse(fs.readFileSync(file,'utf8'));
+  delete old.reportVersion; delete old.candidate;
+  Object.assign(old,{status:'ready',candidateName:'林予安（演示候选人）',endedAt:new Date().toISOString(),markdown:'# 北森 管理个性V2',transcript:[{role:'user',text:'我叫王芳，我协调了三个中心启动。',time:1}]});
+  fs.writeFileSync(file,JSON.stringify(old));
+  const read = await store.readInterview(id);
+  assert.equal(read.status,'failed');
+  assert.equal(read.candidateName,'王芳');
+  assert.equal(store.publicReport(read).markdown,undefined);
+  global.fetch = async (_url, options) => {
+    const data=JSON.parse(JSON.parse(options.body).messages[1].content);
+    assert.equal(data.resume,''); assert.equal(data.candidateName,'王芳');
+    return {ok:true,json:async()=>({choices:[{message:{content:'# 临床PM面试评估报告\n王芳协调了三个中心启动。[T1]'}}]})};
+  };
+  await store.finishInterview(id,[],true); await store.runAnalysis(id);
+  assert.equal((await store.readInterview(id)).status,'ready');
+});
+
+test('analysis rejects external template branding instead of publishing it', async () => {
+  const id=await store.createInterview();
+  await store.finishInterview(id,[{role:'user',text:'我负责项目预算',time:1}]);
+  global.fetch=async()=>({ok:true,json:async()=>({choices:[{message:{content:'# 北森 管理个性V2'}}]})});
+  await store.runAnalysis(id);
+  assert.equal((await store.readInterview(id)).status,'failed');
+  assert.equal((await store.listInterviews()).find(r=>r.id===id).hasReport,false);
 });

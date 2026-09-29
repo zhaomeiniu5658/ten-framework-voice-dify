@@ -5,12 +5,13 @@
     "app_host": "ten-voice-ai-interview-ycudzago.sealoshzh.site",
     "namespace": "ns-udky0j90",
     "region": "hzh.sealos.run",
-    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:3c2b34748619c9eb312ca06552226f065638fc0f69c723afb6499ffa6ca84cc8",
+    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:564cd231084b25e7a0c5cd59ac7e6e52112073e7c37d195760ec58d7f79af28e",
     "docker_hub_user": null,
     "repo_name": "ten-voice-ai-interview",
     "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
     "deployed_at": "2026-09-28T03:28:43.637647+00:00",
-    "last_updated_at": "2026-09-29T03:04:16.268353+00:00"
+    "last_updated_at": "2026-09-29T08:17:15.997932+00:00",
+    "custom_url": "https://aiviewer.ai.maypharm.cn"
   },
   "history": [
     {
@@ -86,6 +87,23 @@
       "method": "kubectl-set-image",
       "status": "success",
       "note": "Published latest local code with Volcengine voice catalog and selection API; preserved stable URL and restored 10 interview reports."
+    },
+    {
+      "at": "2026-09-29T06:16:11.636645+00:00",
+      "action": "set-image-and-bind-domain",
+      "previous_image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:3c2b34748619c9eb312ca06552226f065638fc0f69c723afb6499ffa6ca84cc8",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:5716d71460ce681dd09f02ab9548eaf821a8d3c9b74dc1c602a1a562968b4388",
+      "status": "success",
+      "note": "Deliver opening context once to Dify; update greeting text; bind aiviewer.ai.maypharm.cn with valid HTTPS; preserve original URL and 15 report files."
+    },
+    {
+      "at": "2026-09-29T08:17:15.997932+00:00",
+      "action": "set-image",
+      "previous_image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:5716d71460ce681dd09f02ab9548eaf821a8d3c9b74dc1c602a1a562968b4388",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:564cd231084b25e7a0c5cd59ac7e6e52112073e7c37d195760ec58d7f79af28e",
+      "method": "kubectl-set-image",
+      "status": "success",
+      "note": "Deploy local interview report isolation and empty interview completion fixes; preserve existing report directory and public URL."
     }
   ]
 }

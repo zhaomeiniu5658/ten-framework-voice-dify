@@ -1,0 +1,58 @@
+{
+  "buildx.build.provenance": {
+    "builder": {
+      "id": ""
+    },
+    "buildType": "https://mobyproject.org/buildkit@v1",
+    "materials": [
+      {
+        "uri": "pkg:docker/ghcr.io/ten-framework/ten_agent_build@0.7.14?platform=linux%2Famd64",
+        "digest": {
+          "sha256": "ae28ec069644d5acda9a4182426662a368b993aca39413db77d0bf12d60f941a"
+        }
+      }
+    ],
+    "invocation": {
+      "configSource": {
+        "entryPoint": "Dockerfile"
+      },
+      "parameters": {
+        "frontend": "dockerfile.v0",
+        "locals": [
+          {
+            "name": "context"
+          },
+          {
+            "name": "dockerfile"
+          }
+        ],
+        "root": {
+          "configSource": {
+            "path": "Dockerfile"
+          },
+          "request": {
+            "args": {
+              "vcs:localdir:context": ".",
+              "vcs:localdir:dockerfile": "deploy/aiviewer",
+              "vcs:revision": "7f14ca06ee4e18dc68eb2ac2a6dbf14952c91294",
+              "vcs:source": "git@github.com:zhaomeiniu5658/ten-framework-voice-dify.git"
+            }
+          }
+        },
+        "compatibilityVersion": 30
+      },
+      "environment": {
+        "dockerfileVersion": "1.26.0",
+        "platform": "linux/arm64"
+      }
+    }
+  },
+  "buildx.build.ref": "desktop-linux/desktop-linux/rfrbm3a1k46a01xn7ekzezbpw",
+  "containerimage.descriptor": {
+    "mediaType": "application/vnd.oci.image.index.v1+json",
+    "digest": "sha256:5716d71460ce681dd09f02ab9548eaf821a8d3c9b74dc1c602a1a562968b4388",
+    "size": 856
+  },
+  "containerimage.digest": "sha256:5716d71460ce681dd09f02ab9548eaf821a8d3c9b74dc1c602a1a562968b4388",
+  "image.name": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview:20260929-140246"
+}

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { resolveVolcengineVoice } from "@/lib/volcengine/voices";
 import { createInterview } from "@/lib/interview/store";
+import { z } from "zod";
 import { type NextRequest, NextResponse } from "next/server";
 import { getGraphProperties } from "./graph";
 
@@ -58,6 +59,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    const candidate = z.object({ name: z.string().trim().max(80).default(""), resume: z.string().trim().max(20000).default("") }).safeParse(body.candidate || {});
+    if (!candidate.success) return NextResponse.json({ code: "1", msg: "本次面试者资料格式无效" }, { status: 400 });
     const {
       request_id,
       channel_name,
@@ -163,7 +166,7 @@ export async function POST(request: NextRequest) {
 
     const responseData = response.data;
     if (graph_name.includes("dify") && [0, "0"].includes(responseData.code)) {
-      responseData.interview_session_id = await createInterview();
+      responseData.interview_session_id = await createInterview(candidate.data);
     }
 
     return NextResponse.json(responseData, { status: response.status });

@@ -4,8 +4,8 @@
   "workloadClass": "public-web",
   "namespace": "ns-udky0j90",
   "app": "ten-voice-ai-interview-pqehcrgg",
-  "publicUrl": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
-  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:3c2b34748619c9eb312ca06552226f065638fc0f69c723afb6499ffa6ca84cc8",
+  "publicUrl": "https://aiviewer.ai.maypharm.cn",
+  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:564cd231084b25e7a0c5cd59ac7e6e52112073e7c37d195760ec58d7f79af28e",
   "runtimeReady": true,
   "collectionOk": true,
   "redaction": "complete",
@@ -17,20 +17,21 @@
     "baseline": ".sealos/verification/20260929-104611-baseline.json",
     "final": ".sealos/verification/20260929-104611-final.json",
     "recovery": ".sealos/verification/20260929-104611-recovery.json",
-    "http": ".sealos/verification/20260929-104611-http.json"
+    "http": ".sealos/verification/20260929-104611-http.json",
+    "reportUpdate": {
+      "status": "verified",
+      "checks": [
+        "deployment_ready",
+        "home_200",
+        "interviews_api_200",
+        "voices_api_200",
+        "missing_api_404",
+        "report_directory_preserved"
+      ]
+    }
   },
-  "functionalResult": {
-    "homepageHttpStatus": 200,
-    "interviewsHttpStatus": 200,
-    "volcengineVoicesHttpStatus": 200,
-    "voiceCatalogEntries": 430,
-    "recordsPreserved": 10,
-    "reportBackupHashesMatch": true,
-    "localFrontendTestsPassed": 9,
-    "voiceCatalogSource": "official-snapshot"
-  },
+  "functionalResult": "passed",
   "limitations": [
-    "Browser microphone and end-to-end voice playback were not manually tested in this run.",
-    "Authenticated Dify connectivity was not re-tested in this run."
+    "Browser verification of the authenticated interview flow remains pending; public route and API smoke checks passed."
   ]
 }

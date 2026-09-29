@@ -31,8 +31,6 @@ export async function POST(request: NextRequest, context: Context) {
   let parsed;
   try { parsed = schema.safeParse(JSON.parse(body)); } catch { return NextResponse.json({ error: "无效请求" }, { status: 400 }); }
   if (!parsed.success) return NextResponse.json({ error: "无效面试记录" }, { status: 400 });
-  if (parsed.data.action === "finish" && !parsed.data.transcript.some(t => t.role === "user"))
-    return NextResponse.json({ error: "暂无候选人回答，无法分析。" }, { status: 400 });
   const id = (await context.params).id;
   const value = await finishInterview(id, parsed.data.transcript, parsed.data.action === "retry");
   if (!value) return NextResponse.json({ error: "面试记录不存在" }, { status: 404 });

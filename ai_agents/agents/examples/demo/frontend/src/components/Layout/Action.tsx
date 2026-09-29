@@ -3,6 +3,8 @@
 import * as React from "react";
 import InterviewHistoryDialog from "@/components/Dialog/InterviewHistory";
 import InterviewReportDialog from "@/components/Dialog/InterviewReport";
+import InterviewCandidate from "@/components/Dialog/InterviewCandidate";
+import { transcriptFromItems, type Candidate } from "@/lib/interview/session";
 import { toast } from "sonner";
 import {
   apiPing,
@@ -47,6 +49,17 @@ export default function Action(props: { className?: string }) {
   const language = useAppSelector((state) => state.global.language);
   const voiceType = useAppSelector((state) => state.global.voiceType);
   const volcengineVoiceId = useAppSelector((state) => state.global.volcengineVoiceId);
+  const { interviewSessionId, interviewEnded, chatItems, agentConnecting } = useAppSelector(state => state.global);
+  const [candidate, setCandidate] = React.useState<Candidate>({ name: "", resume: "" });
+  const [finishError, setFinishError] = React.useState(false);
+  const finalize = async () => {
+    if (!interviewSessionId) return;
+    const response = await fetch(`/api/interviews/${interviewSessionId}`, { method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "finish", transcript: transcriptFromItems(chatItems) }) });
+    if (!response.ok) { setFinishError(true); throw new Error("面试已停止，但记录保存失败，请点击重试保存。"); }
+    setFinishError(false);
+  };
   const graphName = useAppSelector((state) => state.global.graphName);
   const agentSettings = useAppSelector((state) => state.global.agentSettings);
   const cozeSettings = useAppSelector((state) => state.global.cozeSettings);
@@ -94,9 +107,12 @@ export default function Action(props: { className?: string }) {
         dispatch(setAgentConnected(false));
         dispatch(setAgentConnecting(false));
         if (isDifyGraph(graphName)) dispatch(endInterview());
+        if (isDifyGraph(graphName)) await finalize();
         toast.success(code === "10002" ? "Agent already disconnected" : "Agent disconnected");
         stopPing();
       } else {
+        // Persist the previous session before its transcript can be cleared.
+        if (isDifyGraph(graphName) && interviewSessionId && interviewEnded) await finalize();
         dispatch(setAgentConnecting(true));
         // Clear the previous transcript before the worker can emit its
         // greeting. The session id arrives after /start returns, and the
@@ -111,6 +127,7 @@ export default function Action(props: { className?: string }) {
           language,
           voiceType,
           volcengineVoiceId,
+          candidate: isDifyGraph(graphName) ? candidate : undefined,
           greeting: isDifyGraph(graphName) ? undefined : agentSettings.greeting,
           prompt: agentSettings.prompt,
         };
@@ -186,6 +203,7 @@ export default function Action(props: { className?: string }) {
         }
         if (res.interview_session_id) {
           dispatch(setInterviewSessionId(res.interview_session_id));
+          setCandidate({ name: "", resume: "" });
         }
         dispatch(setAgentConnected(true));
         dispatch(setAgentConnecting(false));
@@ -258,6 +276,8 @@ export default function Action(props: { className?: string }) {
         <div className="ml-auto flex items-center gap-2">
           <InterviewHistoryDialog />
           <InterviewReportDialog />
+          {isDifyGraph(graphName) && <InterviewCandidate value={candidate} onChange={setCandidate} disabled={agentConnected || agentConnecting} />}
+          {finishError && <button type="button" onClick={() => void finalize().catch(error => toast.error(error.message))}>重试保存</button>}
           <SettingsDialog />
           <LoadingButton
             onClick={onClickConnect}

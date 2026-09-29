@@ -28,7 +28,7 @@ function isSeparator(line: string): boolean {
 
 function ReportTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   const areaIndex = headers.findIndex(h => h === "方面");
-  const comparison = headers.some(h => h.includes("低分特征"));
+  const comparison = headers.some(h => h.includes("行为倾向A") || h.includes("低分特征"));
   if (comparison) return <div className="report-comparisons">
     {rows.map((row, index) => <div className="report-comparison" key={index}>
       {headers.map((header, i) => <div key={i} className={i < 2 ? "report-pole" : "report-evidence"}>
@@ -50,7 +50,7 @@ function ReportTable({ headers, rows }: { headers: string[]; rows: string[][] })
   </table></div>;
 }
 
-/** Safe Markdown subset with a Beisen-inspired report layout. */
+/** Safe Markdown subset with a paginated interview report layout. */
 function MarkdownBody({ text }: { text: string }) {
   const lines = text.trim().split("\n");
   const nodes: ReactNode[] = [];
@@ -85,9 +85,9 @@ function MarkdownBody({ text }: { text: string }) {
 }
 
 type ReportSection = { title: string; text: string };
-export function ReportMarkdown({ text }: { text: string }) {
+export function ReportMarkdown({ text, candidateName, createdAt }: { text: string; candidateName?: string; createdAt?: string }) {
   const sections: ReportSection[] = [];
-  let title = "管理个性V2面试评估报告";
+  let title = "临床PM面试评估报告";
   for (const line of text.trim().split("\n")) {
     if (/^#\s/.test(line)) { title = line.replace(/^#\s/, ""); continue; }
     if (/^##\s/.test(line)) sections.push({ title: line.replace(/^##\s/, ""), text: "" });
@@ -105,17 +105,11 @@ export function ReportMarkdown({ text }: { text: string }) {
         return { title: match ? `详细结果 · ${match[1]}` : section.title, text: match ? chunk.slice(match[0].length) : chunk };
       });
     });
-  return <article className="interview-paper-report" aria-label="管理个性V2面试评估报告">
+  return <article className="interview-paper-report" aria-label="临床PM面试评估报告">
     <section className="report-paper report-cover">
       <div className="report-cover-brand">AI INTERVIEW <span>面试评估</span></div>
-      <svg className="report-cover-art" viewBox="0 0 280 620" aria-hidden="true">
-        <path fill="#bdd5a6" d="M0 0L150 150 115 185C80 155 53 192 90 220L55 255 0 200Z" />
-        <path fill="#48a1ad" d="M0 202L55 257 88 224C53 190 83 161 115 189L150 154 278 282 150 410 114 374C145 341 107 312 80 346L45 311 0 356Z" />
-        <path fill="#f0d271" d="M0 357L45 313 81 349C111 314 141 346 112 375L149 412 0 561Z" />
-        <path d="M0 282H143l8-13 7 37 8-59 8 48 7-13h97" fill="none" stroke="white" strokeWidth="3" />
-      </svg>
-      <div className="report-cover-title"><h1>管理个性V2</h1><div className="report-cover-rule"/><h2>面试评估报告</h2><p>Managerial Personality · Interview Report</p>
-        <dl><dt>应聘岗位</dt><dd>临床项目经理</dd><dt>评估依据</dt><dd>候选人简历与面试记录</dd><dt>报告范围</dt><dd>五方面 / 20 维度</dd></dl>
+      <div className="report-cover-title"><h1>临床PM</h1><div className="report-cover-rule"/><h2>面试评估报告</h2><p>Clinical Project Manager · Interview Report</p>
+        <dl><dt>面试者</dt><dd>{candidateName || "未提供姓名"}</dd><dt>面试时间</dt><dd>{createdAt ? new Date(createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false }) : "见本次面试记录"}</dd><dt>应聘岗位</dt><dd>临床项目经理</dd><dt>评估依据</dt><dd>本次面试记录及本次提供的资料</dd><dt>报告范围</dt><dd>五方面 / 20 维度</dd></dl>
         <div className="report-cover-note">基于面试行为证据的岗位评估<br/>访谈分析 · 非标准化人格测验</div>
       </div>
       <footer className="report-cover-footer">AI 面试分析报告<span>仅供授权阅览</span></footer>
@@ -123,7 +117,7 @@ export function ReportMarkdown({ text }: { text: string }) {
     {pages.map((section, index) => <section className="report-paper" data-area={areaFor(section.title)} key={index}>
       <header className="report-running-header">{title}</header>
       <h2 className="report-page-title">{section.title}</h2>
-      {section.title.startsWith("总体结果") && <p className="report-reading-note">以下呈现访谈中的行为证据与覆盖情况，不对应原测评的 1—10 标准分。</p>}
+      {section.title.startsWith("总体结果") && <p className="report-reading-note">以下呈现本次访谈中的行为证据与覆盖情况，不构成标准化测评分数。</p>}
       <MarkdownBody text={section.text}/>
       <footer className="report-page-footer"><span>AI 面试 · 行为证据分析</span><b>{index + 1}</b></footer>
     </section>)}
