@@ -39,6 +39,7 @@ export interface InitialState {
   themeColor: string;
   language: Language;
   voiceType: VoiceType;
+  volcengineVoiceId: string;
   chatItems: IChatItem[];
   graphName: string;
   agentSettings: IAgentSettings;
@@ -65,6 +66,7 @@ const getInitialState = (): InitialState => {
     rtmConnected: false,
     language: "zh-CN",
     voiceType: "male",
+    volcengineVoiceId: "",
     chatItems: [],
     graphName: "va_dify_azure",
     agentSettings: DEFAULT_AGENT_SETTINGS,
@@ -212,6 +214,9 @@ export const globalSlice = createSlice({
       state.oceanbaseSettings = DEFAULT_OCEAN_BASE_SETTINGS;
       resetOceanBaseSettingsLocal();
     },
+    setVolcengineVoiceId: (state, action: PayloadAction<string>) => {
+      if (!state.agentConnected && !state.agentConnecting) state.volcengineVoiceId = action.payload;
+    },
     setVoiceType: (state, action: PayloadAction<VoiceType>) => {
       state.voiceType = action.payload;
     },
@@ -248,6 +253,7 @@ export const {
   setAgentConnecting,
   setRtmConnected,
   setVoiceType,
+  setVolcengineVoiceId,
   addChatItem,
   setThemeColor,
   setLanguage,

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { resolveVolcengineVoice } from "@/lib/volcengine/voices";
 import { createInterview } from "@/lib/interview/store";
 import { type NextRequest, NextResponse } from "next/server";
 import { getGraphProperties } from "./graph";
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
       graph_name,
       language,
       voice_type,
+      volcengine_voice_id,
       character_id,
       prompt,
       greeting,
@@ -96,6 +98,16 @@ export async function POST(request: NextRequest) {
         ...properties,
         ...(clientProperties as Record<string, unknown>),
       };
+    }
+    if (graph_name === "va_dify_azure") {
+      try {
+        const voice = await resolveVolcengineVoice(volcengine_voice_id, voice_type);
+        properties.tts = { ...properties.tts, params: { ...properties.tts?.params,
+          speaker: voice.id, resource_id: voice.resourceId,
+        } };
+      } catch (error) {
+        return NextResponse.json({ code: "1", data: null, msg: error instanceof Error ? error.message : "音色选择无效" }, { status: 400 });
+      }
     }
     if (graph_name.includes("coze")) {
       properties.llm.token = coze_token;

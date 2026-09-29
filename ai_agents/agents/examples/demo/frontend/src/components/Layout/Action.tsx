@@ -46,6 +46,7 @@ export default function Action(props: { className?: string }) {
   const userId = useAppSelector((state) => state.global.options.userId);
   const language = useAppSelector((state) => state.global.language);
   const voiceType = useAppSelector((state) => state.global.voiceType);
+  const volcengineVoiceId = useAppSelector((state) => state.global.volcengineVoiceId);
   const graphName = useAppSelector((state) => state.global.graphName);
   const agentSettings = useAppSelector((state) => state.global.agentSettings);
   const cozeSettings = useAppSelector((state) => state.global.cozeSettings);
@@ -109,6 +110,7 @@ export default function Action(props: { className?: string }) {
           graphName,
           language,
           voiceType,
+          volcengineVoiceId,
           greeting: isDifyGraph(graphName) ? undefined : agentSettings.greeting,
           prompt: agentSettings.prompt,
         };

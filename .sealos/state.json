@@ -5,12 +5,12 @@
     "app_host": "ten-voice-ai-interview-ycudzago.sealoshzh.site",
     "namespace": "ns-udky0j90",
     "region": "hzh.sealos.run",
-    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f95a2e45f03dec29cbd667723b0e2c580054f1858d686d1107dded905d4389cc",
+    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:396929c15f962efa0bbe545d34e78bdd592c881988e6441333853db3e076e762",
     "docker_hub_user": null,
     "repo_name": "ten-voice-ai-interview",
     "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
     "deployed_at": "2026-09-28T03:28:43.637647+00:00",
-    "last_updated_at": "2026-09-28T07:33:29.722939+00:00"
+    "last_updated_at": "2026-09-28T10:04:30.919056+00:00"
   },
   "history": [
     {
@@ -68,6 +68,15 @@
       "method": "kubectl-set-image",
       "status": "success",
       "note": "Expand natural spoken interview completion phrases and protect negated/quoted mentions."
+    },
+    {
+      "at": "2026-09-28T10:04:30.919056+00:00",
+      "action": "set-image",
+      "previous_image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f95a2e45f03dec29cbd667723b0e2c580054f1858d686d1107dded905d4389cc",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:396929c15f962efa0bbe545d34e78bdd592c881988e6441333853db3e076e762",
+      "method": "kubectl-set-image",
+      "status": "success",
+      "note": "Deploy latest local code; preserve stable Sealos URL and restore 7 existing interview reports."
     }
   ]
 }

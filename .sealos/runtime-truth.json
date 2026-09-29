@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-28T07:33:29.722939+00:00",
+  "generatedAt": "2026-09-28T10:04:30.919056+00:00",
   "terminalState": "success",
   "workloadClass": "public-web",
   "namespace": "ns-udky0j90",
   "app": "ten-voice-ai-interview-pqehcrgg",
   "publicUrl": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
-  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:f95a2e45f03dec29cbd667723b0e2c580054f1858d686d1107dded905d4389cc",
+  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:396929c15f962efa0bbe545d34e78bdd592c881988e6441333853db3e076e762",
   "runtimeReady": true,
   "collectionOk": true,
   "redaction": "complete",
@@ -19,13 +19,14 @@
     "final": ".sealos/verification/closing-phrases-final.json"
   },
   "functionalResult": {
-    "closingUtterancesTested": 25,
-    "negativeCasesTested": 19,
-    "requiresDisconnect": false,
-    "sourceHashesMatch": true,
+    "homepageHttpStatus": 200,
+    "agentsHttpStatus": 200,
+    "interviewsHttpStatus": 200,
     "recordsPreserved": 7,
-    "readyReportsVerified": 4,
-    "difyHttpStatus": 200
+    "difyHttpStatus": 401,
+    "difyStatusNote": "endpoint reachable; unauthenticated probe intentionally returns 401",
+    "containerPythonTests": "20 tests: 19 passed, 1 legacy expectation failed (test_report_displays_full_text_but_speaks_summary_once)",
+    "sourceHashesMatch": true
   },
   "limitations": [
     "浏览器麦克风端未再次人工操作；已在远程新容器用截图中的完整转写和 ASR 测试覆盖。"

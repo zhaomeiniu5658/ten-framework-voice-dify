@@ -11,15 +11,18 @@ import {
 } from "@/components/ui/select";
 import { setVoiceType } from "@/store/reducers/global";
 import type { VoiceType } from "@/types";
+import VolcengineVoiceSelect from "./VolcengineVoiceSelect";
 
 export default function AgentVoicePresetSelect() {
   const dispatch = useAppDispatch();
-  const _options = useAppSelector((state) => state.global.options);
+  const graphName = useAppSelector((state) => state.global.graphName);
   const voiceType = useAppSelector((state) => state.global.voiceType);
 
   const onVoiceChange = (value: string) => {
     dispatch(setVoiceType(value as VoiceType));
   };
+
+  if (graphName === "va_dify_azure") return <VolcengineVoiceSelect />;
 
   return (
     <Select value={voiceType} onValueChange={onVoiceChange}>

@@ -8,6 +8,7 @@ export interface StartRequestConfig {
   graphName: string;
   language: Language;
   voiceType: "male" | "female";
+  volcengineVoiceId?: string;
   prompt?: string;
   greeting?: string;
   coze_token?: string;
@@ -48,6 +49,7 @@ export const apiStartService = async (
     graphName,
     language,
     voiceType,
+    volcengineVoiceId,
     greeting,
     prompt,
     coze_token,
@@ -64,6 +66,7 @@ export const apiStartService = async (
     graph_name: graphName,
     language,
     voice_type: voiceType,
+    volcengine_voice_id: volcengineVoiceId,
     greeting: greeting ?? undefined,
     prompt: prompt ?? undefined,
     coze_token: coze_token ?? undefined,
