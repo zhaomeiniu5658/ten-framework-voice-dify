@@ -3,11 +3,11 @@ import { mkdir, readFile, writeFile, rename, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { analyzeInterview, type Turn } from "./report";
-import { candidateFromTurns, hasCandidateAnswer, REPORT_VERSION, UNKNOWN_CANDIDATE, type Candidate } from "./session";
+import { candidateFromTurns, hasCandidateAnswer, inferPosition, REPORT_VERSION, UNKNOWN_CANDIDATE, type Candidate } from "./session";
 
 export type Interview = {
   id: string; status: "interviewing" | "completed" | "analyzing" | "ready" | "failed";
-  candidateName?: string;
+  candidateName?: string; position?: string; positionVersion?: number;
   candidate?: Candidate; reportVersion?: number;
   createdAt: string; endedAt?: string; updatedAt: string;
   transcript: Turn[]; markdown?: string; error?: string;
@@ -41,6 +41,11 @@ export async function readInterview(id: string): Promise<Interview | null> {
       value.status = hasCandidateAnswer(value.transcript) ? "failed" : "completed";
       value.endedAt ||= value.updatedAt || value.createdAt;
       value.error = value.status === "failed" ? "旧版报告包含演示资料，请根据该次面试记录重新分析。" : undefined;
+    }
+    if (value.status === "ready" && value.positionVersion !== 1) {
+      value.status = "failed";
+      value.markdown = undefined;
+      value.error = "旧版报告使用固定 PM 岗位，请根据本次记录重新分析。";
     }
     if (value.status === "analyzing" && Date.now() - Date.parse(value.updatedAt) > 240000) {
       value.status = "failed";
@@ -79,9 +84,11 @@ export async function runAnalysis(id: string) {
     const value = await readInterview(id);
     if (!value || value.status !== "analyzing") return;
     try {
+      value.position = inferPosition(value.candidate, value.transcript);
+      value.positionVersion = 1;
       value.markdown = await analyzeInterview(value.transcript, value.endedAt!, {
         id: value.id, createdAt: value.createdAt, candidateName: value.candidateName || UNKNOWN_CANDIDATE,
-        resume: value.candidate?.resume || "",
+        position: value.position, resume: value.candidate?.resume || "", interviewType: value.candidate?.interviewType,
       });
       value.status = "ready";
     } catch (error) {
@@ -97,7 +104,7 @@ export async function runAnalysis(id: string) {
 }
 export function publicReport(value: Interview) {
   return { id: value.id, status: value.status, markdown: value.status === "ready" ? value.markdown : undefined,
-    candidateName: value.candidateName, createdAt: value.createdAt,
+    candidateName: value.candidateName, position: inferPosition(value.candidate, value.transcript), interviewType: value.candidate?.interviewType || "cra", createdAt: value.createdAt,
     error: value.error, endedAt: value.endedAt, turnCount: value.transcript.length };
 }
 
@@ -110,6 +117,6 @@ export async function listInterviews() {
   return records.filter((r): r is Interview => r !== null)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     .map(r => ({ id: r.id, createdAt: r.createdAt, endedAt: r.endedAt,
-      candidateName: r.candidateName || UNKNOWN_CANDIDATE, status: r.status,
+      candidateName: r.candidateName || UNKNOWN_CANDIDATE, status: r.status, interviewType: r.candidate?.interviewType || "cra",
       hasReport: r.status === "ready" && Boolean(r.markdown) }));
 }

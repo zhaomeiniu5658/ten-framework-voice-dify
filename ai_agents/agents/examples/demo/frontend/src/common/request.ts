@@ -9,7 +9,7 @@ export interface StartRequestConfig {
   language: Language;
   voiceType: "male" | "female";
   volcengineVoiceId?: string;
-  candidate?: { name: string; resume: string };
+  candidate?: { name: string; resume: string; position?: string; interviewType?: string };
   prompt?: string;
   greeting?: string;
   coze_token?: string;

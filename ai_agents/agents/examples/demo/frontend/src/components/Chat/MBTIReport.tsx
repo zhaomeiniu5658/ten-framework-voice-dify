@@ -85,11 +85,13 @@ function MarkdownBody({ text }: { text: string }) {
 }
 
 type ReportSection = { title: string; text: string };
-export function ReportMarkdown({ text, candidateName, createdAt }: { text: string; candidateName?: string; createdAt?: string }) {
+export function ReportMarkdown({ text, candidateName, createdAt, position, interviewType }: { text: string; candidateName?: string; createdAt?: string; position?: string; interviewType?: string }) {
+  const personality = interviewType === "personality";
   const sections: ReportSection[] = [];
-  let title = "临床PM面试评估报告";
+  const displayPosition = position || "岗位待确认";
+  const title = personality ? "性格测试报告" : `${displayPosition}面试评估报告`;
   for (const line of text.trim().split("\n")) {
-    if (/^#\s/.test(line)) { title = line.replace(/^#\s/, ""); continue; }
+    if (/^#\s/.test(line)) continue;
     if (/^##\s/.test(line)) sections.push({ title: line.replace(/^##\s/, ""), text: "" });
     else {
       if (!sections.length) sections.push({ title: "报告说明", text: "" });
@@ -105,12 +107,12 @@ export function ReportMarkdown({ text, candidateName, createdAt }: { text: strin
         return { title: match ? `详细结果 · ${match[1]}` : section.title, text: match ? chunk.slice(match[0].length) : chunk };
       });
     });
-  return <article className="interview-paper-report" aria-label="临床PM面试评估报告">
+  return <article className={`interview-paper-report ${personality ? "personality-report" : ""}`} aria-label={personality ? "性格测试报告" : `${displayPosition}面试评估报告`}>
     <section className="report-paper report-cover">
-      <div className="report-cover-brand">AI INTERVIEW <span>面试评估</span></div>
-      <div className="report-cover-title"><h1>临床PM</h1><div className="report-cover-rule"/><h2>面试评估报告</h2><p>Clinical Project Manager · Interview Report</p>
-        <dl><dt>面试者</dt><dd>{candidateName || "未提供姓名"}</dd><dt>面试时间</dt><dd>{createdAt ? new Date(createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false }) : "见本次面试记录"}</dd><dt>应聘岗位</dt><dd>临床项目经理</dd><dt>评估依据</dt><dd>本次面试记录及本次提供的资料</dd><dt>报告范围</dt><dd>五方面 / 20 维度</dd></dl>
-        <div className="report-cover-note">基于面试行为证据的岗位评估<br/>访谈分析 · 非标准化人格测验</div>
+      <div className="report-cover-brand">AI INTERVIEW <span>{personality ? "行为偏好画像" : "面试评估"}</span></div>
+      <div className="report-cover-title"><h1>{personality ? "人格类型画像" : displayPosition}</h1><div className="report-cover-rule"/><h2>{personality ? "性格测试报告" : "面试评估报告"}</h2><p>{personality ? "Personality Profile · Interview Report" : `${displayPosition} · Interview Report`}</p>
+        <dl><dt>面试者</dt><dd>{candidateName || "未提供姓名"}</dd><dt>面试时间</dt><dd>{createdAt ? new Date(createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false }) : "见本次面试记录"}</dd><dt>应聘岗位</dt><dd>{displayPosition}</dd><dt>评估依据</dt><dd>本次面试记录及本次提供的资料</dd><dt>报告范围</dt><dd>五方面 / 20 维度</dd></dl>
+        <div className="report-cover-note">{personality ? "基于工作场景访谈的行为偏好画像" : "基于面试行为证据的岗位评估"}<br/>{personality ? "访谈倾向 · 非标准化人格测评" : "访谈分析 · 非标准化人格测验"}</div>
       </div>
       <footer className="report-cover-footer">AI 面试分析报告<span>仅供授权阅览</span></footer>
     </section>

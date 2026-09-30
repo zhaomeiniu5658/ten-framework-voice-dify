@@ -129,3 +129,40 @@ test('analysis rejects external template branding instead of publishing it', asy
   assert.equal((await store.readInterview(id)).status,'failed');
   assert.equal((await store.listInterviews()).find(r=>r.id===id).hasReport,false);
 });
+
+test('position uses candidate evidence, not interviewer assumptions or colleague mentions', () => {
+  const { inferPosition } = require(path.join(root, 'session.js'));
+  const turn = text => ({role:'user',text,time:1});
+  assert.equal(inferPosition({name:'',resume:'',position:'CRA'}), 'CRA');
+  assert.equal(inferPosition(undefined,[turn('我是一个CRA，负责中心监查。')]), '临床 CRA');
+  assert.equal(inferPosition(undefined,[{role:'assistant',text:'作为PM你如何管理CRA？',time:1},turn('我和CRA同事一起开会。')]), '岗位待确认');
+  assert.equal(inferPosition({name:'',resume:'曾任CRA，现在PM'}), '岗位待确认');
+  assert.equal(inferPosition({name:'',resume:'应聘岗位：临床项目经理\n曾任CRA'}), '临床项目经理');
+});
+
+test('CRA report input, API metadata and old PM report regeneration agree on role', async () => {
+  const id = await store.createInterview({name:'岗位验收',resume:''});
+  await store.finishInterview(id,[{role:'user',text:'我是CRA，我完成中心监查和问题整改。',time:1}]);
+  global.fetch = async (_,options) => {
+    const payload = JSON.parse(options.body);
+    const input = JSON.parse(payload.messages[1].content);
+    assert.equal(input.position,'临床 CRA');
+    assert.ok(payload.messages[0].content.includes('CRA 不套用 PM'));
+    assert.ok(!payload.messages[0].content.includes('标题固定为'));
+    return {ok:true,json:async()=>({choices:[{message:{content:'# 临床 CRA 面试评估报告\n## 综合评价\n中心监查 [T1]'}}]})};
+  };
+  await store.runAnalysis(id);
+  const record = await store.readInterview(id);
+  assert.equal(store.publicReport(record).position,'临床 CRA');
+  assert.equal(record.status,'ready');
+  delete record.positionVersion;
+  record.markdown='# 临床PM面试评估报告';
+  fs.writeFileSync(path.join(root,'records',id+'.json'),JSON.stringify(record));
+  const old=await store.readInterview(id);
+  assert.equal(old.status,'failed');
+  assert.equal(store.publicReport(old).markdown,undefined);
+  assert.match(old.error,/重新分析/);
+  await store.finishInterview(id,[],true);
+  await store.runAnalysis(id);
+  assert.equal((await store.readInterview(id)).status,'ready');
+});

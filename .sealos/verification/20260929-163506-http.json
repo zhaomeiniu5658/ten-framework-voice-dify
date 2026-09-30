@@ -1,0 +1,34 @@
+[
+  {
+    "url": "https://aiviewer.ai.maypharm.cn/",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "url": "https://aiviewer.ai.maypharm.cn/api/interviews",
+    "status": 200,
+    "ok": true,
+    "recordCount": 22
+  },
+  {
+    "url": "https://aiviewer.ai.maypharm.cn/api/interviews/deploy-check-missing",
+    "status": 404,
+    "ok": true
+  },
+  {
+    "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site/",
+    "status": 200,
+    "ok": true
+  },
+  {
+    "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site/api/interviews",
+    "status": 200,
+    "ok": true,
+    "recordCount": 22
+  },
+  {
+    "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site/api/interviews/deploy-check-missing",
+    "status": 404,
+    "ok": true
+  }
+]

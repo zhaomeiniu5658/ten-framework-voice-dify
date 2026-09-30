@@ -188,6 +188,10 @@ class DifyLLM2Config(BaseModel):
     user_id: str = "TenAgent"
     opening_delivered: bool = False
     prompt: str = ""
+    candidate_name: str = ""
+    candidate_resume: str = ""
+    candidate_position: str = ""
+    interview_type: str = "cra"
     # Networking
     connect_timeout_s: float = 15.0
     total_timeout_s: float = 60.0
@@ -290,19 +294,24 @@ class DifyChatClient:
         if self.config.opening_delivered and not self._conversation_id:
             query_text = (
                 "【面试衔接上下文】面试官已向候选人说过："
-                "您好，我是今天的面试官。请你先介绍一下自己。\n"
+                "您好，我是今天的 AI 面试官。请你先介绍一下自己。\n"
                 "下面是候选人对此的回答。请根据回答继续面试；"
                 "若已提供自我介绍，不要再次要求自我介绍，"
                 "直接针对已提供的经历提出一个具体问题。\n\n"
                 f"【候选人回答】\n{query_text}"
             )
 
+        inputs = {
+            "candidate_name": self.config.candidate_name,
+            "candidate_resume": self.config.candidate_resume,
+            "candidate_position": self.config.candidate_position,
+            "interview_type": self.config.interview_type,
+        }
+        if self.config.opening_delivered:
+            inputs["opening_delivered"] = "true"
+
         payload = {
-            "inputs": (
-                {"opening_delivered": "true"}
-                if self.config.opening_delivered
-                else {}
-            ),
+            "inputs": inputs,
             "query": query_text,
             "response_mode": "streaming",
         }

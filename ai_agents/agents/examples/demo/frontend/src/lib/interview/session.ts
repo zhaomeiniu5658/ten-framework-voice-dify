@@ -1,7 +1,29 @@
 export type Turn = { role: "user" | "assistant"; text: string; time: number };
-export type Candidate = { name: string; resume: string };
+export type InterviewType = "personality" | "cra" | "clinical_pm";
+export type Candidate = { name: string; resume: string; position?: string; interviewType?: InterviewType };
 export const REPORT_VERSION = 2;
 export const UNKNOWN_CANDIDATE = "未提供姓名";
+
+// Never infer a candidate's role from an interviewer question or generated report.
+export function inferPosition(candidate?: Candidate, turns: Turn[] = []) {
+  if (candidate?.position?.trim()) return candidate.position.trim();
+  const identify = (source: string) => {
+    const cra = /\bCRA\b|临床监查员|clinical research associate/i.test(source);
+    const pm = /\bPM\b|临床项目经理|clinical project manager|临床PM/i.test(source);
+    return cra !== pm ? (cra ? "临床 CRA" : "临床项目经理") : undefined;
+  };
+  for (const turn of turns) {
+    if (turn.role !== "user") continue;
+    const declarations = turn.text.match(/(?:我(?:目前|现在)?(?:是|担任|应聘|申请)|应聘岗位[：:])[^，。；！？\n]{0,50}/g) || [];
+    for (const declaration of declarations) {
+      if (/不是|不应聘|不申请/.test(declaration)) continue;
+      const role = identify(declaration);
+      if (role) return role;
+    }
+  }
+  const target = candidate?.resume.match(/(?:应聘岗位|求职意向|目标岗位)[：:]([^\n，。]+)/)?.[1];
+  return identify(target || "") || identify(candidate?.resume || "") || "岗位待确认";
+}
 
 export function hasCandidateAnswer(turns: Turn[]) {
   return turns.some(turn => {

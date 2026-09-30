@@ -1,37 +1,27 @@
 {
-  "generatedAt": "2026-09-29T03:04:16.268353+00:00",
+  "generatedAt": "2026-09-29T08:49:00.724425+00:00",
   "terminalState": "success",
   "workloadClass": "public-web",
   "namespace": "ns-udky0j90",
   "app": "ten-voice-ai-interview-pqehcrgg",
   "publicUrl": "https://aiviewer.ai.maypharm.cn",
-  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:564cd231084b25e7a0c5cd59ac7e6e52112073e7c37d195760ec58d7f79af28e",
+  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:b1484e9670d7b586e3a902945389cd489d8bf520bd8b339a6ccdc14a394e8526",
+  "commit": "05c6870a4",
   "runtimeReady": true,
   "collectionOk": true,
   "redaction": "complete",
-  "stabilityWindowSeconds": 125,
+  "stabilityWindowSeconds": 85,
   "evidence": {
-    "build": ".sealos/verification/20260929-104611-build.json",
-    "network": ".sealos/verification/20260929-104611-network.json",
-    "footprint": ".sealos/verification/20260929-104611-footprint.json",
-    "baseline": ".sealos/verification/20260929-104611-baseline.json",
-    "final": ".sealos/verification/20260929-104611-final.json",
-    "recovery": ".sealos/verification/20260929-104611-recovery.json",
-    "http": ".sealos/verification/20260929-104611-http.json",
-    "reportUpdate": {
-      "status": "verified",
-      "checks": [
-        "deployment_ready",
-        "home_200",
-        "interviews_api_200",
-        "voices_api_200",
-        "missing_api_404",
-        "report_directory_preserved"
-      ]
-    }
+    "build": ".sealos/verification/20260929-163506-build.json",
+    "baseline": ".sealos/verification/20260929-163506-baseline.json",
+    "final": ".sealos/verification/20260929-163506-final.json",
+    "footprint": ".sealos/verification/20260929-163506-footprint.json",
+    "http": ".sealos/verification/20260929-163506-http.json",
+    "recovery": ".sealos/verification/20260929-163506-recovery.json",
+    "network": ".sealos/verification/20260929-163502-network.json"
   },
-  "functionalResult": "passed",
   "limitations": [
-    "Browser verification of the authenticated interview flow remains pending; public route and API smoke checks passed."
-  ]
+    "Real microphone ASR and TTS end-to-end flow not exercised in this release."
+  ],
+  "reportFilesPreserved": 22
 }

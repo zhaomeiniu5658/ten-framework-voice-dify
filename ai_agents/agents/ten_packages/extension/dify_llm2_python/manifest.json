@@ -33,7 +33,9 @@
     ],
     "property": {
       "properties": {
-        "opening_delivered": {"type": "bool"},
+        "opening_delivered": {
+          "type": "bool"
+        },
         "user_id": {
           "type": "string"
         },
@@ -41,6 +43,18 @@
           "type": "string"
         },
         "base_url": {
+          "type": "string"
+        },
+        "candidate_name": {
+          "type": "string"
+        },
+        "candidate_resume": {
+          "type": "string"
+        },
+        "candidate_position": {
+          "type": "string"
+        },
+        "interview_type": {
           "type": "string"
         }
       }

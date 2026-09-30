@@ -8,8 +8,8 @@ import { ReportMarkdown } from "@/components/Chat/MBTIReport";
 import { transcriptFromItems } from "@/lib/interview/session";
 import { downloadRenderedInterviewReport } from "@/lib/interview/download";
 
-type Report = { id: string; candidateName?: string; createdAt?: string; endedAt?: string; status: "interviewing" | "completed" | "analyzing" | "ready" | "failed";
-  markdown?: string; error?: string; turnCount?: number };
+type Report = { id: string; candidateName?: string; position?: string; createdAt?: string; endedAt?: string; status: "interviewing" | "completed" | "analyzing" | "ready" | "failed";
+  markdown?: string; error?: string; turnCount?: number; interviewType?: string };
 
 export default function InterviewReportDialog() {
   const { interviewSessionId: liveId, interviewEnded: ended, chatItems } = useAppSelector(s => s.global);
@@ -86,11 +86,11 @@ export default function InterviewReportDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="flex max-h-[90vh] w-[95vw] max-w-5xl flex-col overflow-hidden p-0">
         <DialogHeader className="shrink-0 border-b border-border px-6 py-5 pr-12">
-          <DialogTitle>临床PM面试评估报告</DialogTitle>
-          <DialogDescription>五方面 / 20 维度 · 基于面试行为证据 · 非正式测评</DialogDescription>
+          <DialogTitle>{report?.interviewType === "personality" ? "性格测试报告" : `${report?.position || ""}面试评估报告`}</DialogTitle>
+          <DialogDescription>{report?.interviewType === "personality" ? "基于工作场景访谈的行为偏好画像 · 非标准化测评" : "五方面 / 20 维度 · 基于面试行为证据 · 非正式测评"}</DialogDescription>
         </DialogHeader>
         <div className="min-h-0 flex-1 overflow-auto px-6 py-5" aria-live="polite">
-          {report?.id === id && report.status === "ready" && report.markdown ? <div ref={reportRef}><ReportMarkdown text={report.markdown} candidateName={report.candidateName} createdAt={report.createdAt} /></div> :
+          {report?.id === id && report.status === "ready" && report.markdown ? <div ref={reportRef}><ReportMarkdown text={report.markdown} candidateName={report.candidateName} createdAt={report.createdAt} position={report.position} interviewType={report.interviewType} /></div> :
             <div className="flex min-h-64 flex-col items-center justify-center gap-4 text-center text-muted-foreground">
               {sending || report?.status === "analyzing" ? <><Loader2 className="animate-spin" /><p>面试已结束，正在分析完整面试记录与简历…</p><p className="text-xs">可以关闭窗口，报告会在后台继续生成。</p></> :
                 <><FileText size={36} /><p>{report?.error || error || (report?.status === "completed" ? "面试已完成，暂无候选人回答，暂无报告。" : id && !ended ? "面试进行中，结束后将自动生成分析报告。" : "尚无面试报告，请先完成一次面试。")}</p>

@@ -12,6 +12,9 @@ const SECRET_KEYS = new Set([
   "secret",
   "password",
   "app_certificate",
+  "candidate_name",
+  "candidate_resume",
+  "candidate_position",
 ]);
 
 function redactForLog(value: unknown): unknown {
@@ -59,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const candidate = z.object({ name: z.string().trim().max(80).default(""), resume: z.string().trim().max(20000).default("") }).safeParse(body.candidate || {});
+    const candidate = z.object({ name: z.string().trim().max(80).default(""), resume: z.string().trim().max(20000).default(""), position: z.string().trim().max(80).optional(), interviewType: z.enum(["personality", "cra", "clinical_pm"]).default("cra") }).safeParse(body.candidate || {});
     if (!candidate.success) return NextResponse.json({ code: "1", msg: "本次面试者资料格式无效" }, { status: 400 });
     const {
       request_id,
@@ -135,6 +138,14 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      properties.llm.candidate_name = candidate.data.name;
+      properties.llm.candidate_resume = candidate.data.resume;
+      properties.llm.candidate_position = candidate.data.position || "";
+      properties.llm.interview_type = candidate.data.interviewType;
+      if (candidate.data.interviewType === "personality") {
+        properties.main_control = { ...properties.main_control, greeting: "接下来我会通过几个日常工作和沟通场景，进一步了解你的工作习惯和行为偏好。这里没有标准答案，请按照你平时最自然、最常见的做法回答即可。" };
+      }
+      properties.llm.prompt = "";
       properties.llm.api_key = resolvedDifyApiKey;
       properties.llm.base_url = resolvedDifyBaseUrl;
     }

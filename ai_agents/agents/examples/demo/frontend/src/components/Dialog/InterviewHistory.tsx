@@ -7,7 +7,7 @@ import { ReportMarkdown } from "@/components/Chat/MBTIReport";
 import { downloadRenderedInterviewReport } from "@/lib/interview/download";
 
 type Status = "interviewing" | "completed" | "analyzing" | "ready" | "failed";
-type RecordItem = { id: string; createdAt: string; candidateName: string; status: Status; hasReport: boolean };
+type RecordItem = { id: string; createdAt: string; candidateName: string; status: Status; hasReport: boolean; interviewType?: string };
 const labels: Record<Status, string> = { interviewing: "面试中", completed: "已完成", analyzing: "已完成 · 分析中", ready: "已完成", failed: "已完成 · 分析失败" };
 const date = (value: string) => new Intl.DateTimeFormat("zh-CN", {
   timeZone: "Asia/Shanghai", year: "numeric", month: "long", day: "numeric",
@@ -18,7 +18,7 @@ export default function InterviewHistoryDialog() {
   const [open, setOpen] = React.useState(false);
   const [records, setRecords] = React.useState<RecordItem[]>([]);
   const [selected, setSelected] = React.useState<RecordItem | null>(null);
-  const [report, setReport] = React.useState<{id: string; candidateName?: string; createdAt?: string; status: Status; markdown?: string; error?: string} | null>(null);
+  const [report, setReport] = React.useState<{id: string; candidateName?: string; position?: string; createdAt?: string; status: Status; markdown?: string; error?: string; interviewType?: string} | null>(null);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [revision, setRevision] = React.useState(0);
@@ -48,7 +48,7 @@ export default function InterviewHistoryDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="flex max-h-[90vh] w-[95vw] max-w-5xl flex-col overflow-hidden">
         <DialogHeader>
-          <DialogTitle>{selected ? "临床PM面试评估报告" : "面试记录"}</DialogTitle>
+          <DialogTitle>{selected ? (report?.interviewType === "personality" ? "性格测试报告" : `${report?.position || ""}面试评估报告`) : "面试记录"}</DialogTitle>
           <DialogDescription>{selected ? `${date(selected.createdAt)} · ${selected.candidateName}` : "按面试开始时间倒序排列 · 北京时间"}</DialogDescription>
         </DialogHeader>
         <div className="flex gap-2">
@@ -61,7 +61,7 @@ export default function InterviewHistoryDialog() {
         </div>
         <div className="min-h-0 flex-1 overflow-auto" aria-live="polite">
           {loading ? <div className="flex justify-center p-12"><Loader2 className="animate-spin" aria-label="加载中" /></div> : error ? <p className="p-6 text-destructive">{error}</p> : selected ? (
-            report?.id === selected.id && report.status === "ready" && report.markdown ? <div ref={reportRef}><ReportMarkdown text={report.markdown} candidateName={report.candidateName} createdAt={report.createdAt} /></div> :
+            report?.id === selected.id && report.status === "ready" && report.markdown ? <div ref={reportRef}><ReportMarkdown text={report.markdown} candidateName={report.candidateName} createdAt={report.createdAt} position={report.position} interviewType={report.interviewType} /></div> :
               <p className="p-8 text-center text-muted-foreground">{report?.error || (report?.status === "analyzing" ? "正在分析，可以关闭窗口后再查看。" : report?.status === "interviewing" ? "本次面试尚未完成，暂无报告。" : "暂无可用报告。")}</p>
           ) : records.length === 0 ? <p className="p-8 text-center text-muted-foreground">暂无面试记录。</p> : <table className="w-full text-left text-sm">
             <thead><tr className="border-b"><th className="p-3">面试时间</th><th className="p-3">面试者</th><th className="p-3">状态</th><th className="p-3">面试报告</th></tr></thead>

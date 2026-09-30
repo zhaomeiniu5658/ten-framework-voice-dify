@@ -138,6 +138,23 @@ class DifyStreamingEndTests(unittest.IsolatedAsyncioTestCase):
         payload = self.client._session.post.call_args.kwargs["json"]
         self.assertEqual(payload["query"], "你好")
 
+    async def test_candidate_inputs_are_separate_from_answer_and_per_client(self):
+        self.client.config.candidate_name = "测试甲"
+        self.client.config.candidate_position = "CRA"
+        self.client.config.candidate_resume = "仅有青桥眼科项目"
+        for conversation in ("", "test-conversation"):
+            self.client._conversation_id = conversation
+            self.mock_stream(["你如何核查数据？"])
+            await self.responses("我完成了SDV。")
+            payload = self.client._session.post.call_args.kwargs["json"]
+            self.assertEqual(payload["inputs"]["candidate_name"], "测试甲")
+            self.assertEqual(payload["inputs"]["candidate_position"], "CRA")
+            self.assertEqual(payload["inputs"]["candidate_resume"], "仅有青桥眼科项目")
+            self.assertNotIn("青桥", payload["query"])
+        other = DifyLLM2Config.model_validate_json("{}")
+        self.assertEqual(other.candidate_resume, "")
+        self.assertEqual(other.candidate_position, "")
+
     async def test_explicit_end_needs_no_dify_request(self):
         for text in END_QUERIES:
             with self.subTest(text=text):

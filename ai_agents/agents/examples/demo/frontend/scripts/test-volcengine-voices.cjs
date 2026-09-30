@@ -55,12 +55,16 @@ test('selected voice reaches TEN start with matching resource and cannot be over
     '@/lib/interview/store': { createInterview: async () => 'test-session' },
   })('app/api/agents/start/route.ts');
   const response = await POST({ json: async () => ({
+    candidate: { name: '测试甲', position: 'CRA', resume: '青桥眼科项目' },
     request_id: 'voice-test', channel_name: 'test', user_uid: 1,
     graph_name: 'va_dify_azure', language: 'zh-CN', voice_type: 'male',
     volcengine_voice_id: 'zh_female_shuangkuaisisi_uranus_bigtts',
     properties: { tts: { params: { speaker: 'wrong-voice', resource_id: 'wrong-resource' } } },
   }) });
   assert.equal(response.status, 200);
+  assert.equal(outgoing.properties.llm.candidate_name, '测试甲');
+  assert.equal(outgoing.properties.llm.candidate_position, 'CRA');
+  assert.equal(outgoing.properties.llm.candidate_resume, '青桥眼科项目');
   assert.equal(outgoing.properties.tts.params.speaker, 'zh_female_shuangkuaisisi_uranus_bigtts');
   assert.equal(outgoing.properties.tts.params.resource_id, 'seed-tts-2.0');
   outgoing = undefined;

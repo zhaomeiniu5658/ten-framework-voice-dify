@@ -50,7 +50,7 @@ export default function Action(props: { className?: string }) {
   const voiceType = useAppSelector((state) => state.global.voiceType);
   const volcengineVoiceId = useAppSelector((state) => state.global.volcengineVoiceId);
   const { interviewSessionId, interviewEnded, chatItems, agentConnecting } = useAppSelector(state => state.global);
-  const [candidate, setCandidate] = React.useState<Candidate>({ name: "", resume: "" });
+  const [candidate, setCandidate] = React.useState<Candidate>({ name: "", resume: "", interviewType: "cra" });
   const [finishError, setFinishError] = React.useState(false);
   const finalize = async () => {
     if (!interviewSessionId) return;
@@ -203,7 +203,7 @@ export default function Action(props: { className?: string }) {
         }
         if (res.interview_session_id) {
           dispatch(setInterviewSessionId(res.interview_session_id));
-          setCandidate({ name: "", resume: "" });
+          setCandidate({ name: "", resume: "", interviewType: "cra" });
         }
         dispatch(setAgentConnected(true));
         dispatch(setAgentConnecting(false));
