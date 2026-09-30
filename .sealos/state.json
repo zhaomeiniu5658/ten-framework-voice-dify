@@ -5,12 +5,12 @@
     "app_host": "ten-voice-ai-interview-ycudzago.sealoshzh.site",
     "namespace": "ns-udky0j90",
     "region": "hzh.sealos.run",
-    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:10e1a63abead1e62c934739621ad321d35987bce57fc7666e179c640cc85d45b",
+    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:6321ee8e29900a7498b0bf0a71041aa50d314aea27ae8c423c52a3bce88b201c",
     "docker_hub_user": null,
     "repo_name": "ten-voice-ai-interview",
     "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
-    "deployed_at": "2026-09-30T08:33:46.858288+00:00",
-    "last_updated_at": "2026-09-30T08:33:46.858288+00:00"
+    "deployed_at": "2026-09-30T09:22:00.778952+00:00",
+    "last_updated_at": "2026-09-30T09:22:00.778952+00:00"
   },
   "history": [
     {
@@ -131,22 +131,31 @@
       "method": "kubectl-set-image",
       "status": "success",
       "note": "Deploy committed CRA/clinical PM scored report layout and current interview isolation fixes; preserve both public URLs and existing report records."
+    },
+    {
+      "at": "2026-09-30T09:22:00.778952+00:00",
+      "action": "set-image",
+      "previous_image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:10e1a63abead1e62c934739621ad321d35987bce57fc7666e179c640cc85d45b",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:6321ee8e29900a7498b0bf0a71041aa50d314aea27ae8c423c52a3bce88b201c",
+      "method": "kubectl-set-image",
+      "status": "success",
+      "note": "Deploy report field parsing and interview response debounce updates; CRA/clinical PM 2600ms/3500ms; personality 900ms/1500ms; preserve public URLs and report records."
     }
   ],
   "runtime_truth": {
     "status": "verified",
-    "captured_at": "2026-09-30T08:33:46.858288+00:00",
+    "captured_at": "2026-09-30T09:22:00.778952+00:00",
     "identity": {
       "app_name": "ten-voice-ai-interview-pqehcrgg",
       "namespace": "ns-udky0j90",
-      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:10e1a63abead1e62c934739621ad321d35987bce57fc7666e179c640cc85d45b",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:6321ee8e29900a7498b0bf0a71041aa50d314aea27ae8c423c52a3bce88b201c",
       "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site"
     },
     "evidence_paths": [
-      ".sealos/verification/20260930-cra-scored-build.json",
-      ".sealos/verification/20260930-cra-scored-baseline.json",
-      ".sealos/verification/20260930-cra-scored-final.json",
-      ".sealos/verification/20260930-cra-scored-footprint.json"
+      ".sealos/verification/20260930-report-fields-build.json",
+      ".sealos/verification/20260930-report-fields-baseline.json",
+      ".sealos/verification/20260930-report-fields-final.json",
+      ".sealos/verification/20260930-report-fields-footprint.json"
     ],
     "redaction_status": "complete",
     "stability_window_seconds": 60,
@@ -157,7 +166,7 @@
       "reports_api_200",
       "missing_report_404",
       "launchpad_port_3000",
-      "records_restored_and_preserved"
+      "records_restored_zero_conflicts"
     ]
   }
 }

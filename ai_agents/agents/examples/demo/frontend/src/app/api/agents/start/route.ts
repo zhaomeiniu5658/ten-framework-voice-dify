@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
           ...properties.main_control,
           greeting: "接下来我会通过几个日常工作和沟通场景，进一步了解你的工作习惯和行为偏好。这里没有标准答案，请按照你平时最自然、最常见的做法回答即可。",
           // Personality answers are usually short scenario choices. The
-          // clinical-PM defaults (3s / 5.5s) make every answer feel stalled.
+          // Longer waits for professional interviews stall these answers.
           // Keep a small pause to merge a trailing ASR fragment without
           // making the candidate wait several seconds before the next prompt.
           asr_final_debounce_ms: 900,

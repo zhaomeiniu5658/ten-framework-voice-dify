@@ -352,8 +352,8 @@ export const getGraphProperties = (
         interrupt_on_partial: false,
         // Keep enough silence to merge a trailing ASR fragment while avoiding
         // an unnecessarily long pause before the next interview question.
-        asr_final_debounce_ms: 2700,
-        asr_short_answer_debounce_ms: 5200,
+        asr_final_debounce_ms: 2600,
+        asr_short_answer_debounce_ms: 3500,
         ignore_acknowledgements: true,
         report_tts_summary: "",
       },
