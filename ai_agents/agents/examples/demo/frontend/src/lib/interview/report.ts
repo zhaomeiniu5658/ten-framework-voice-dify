@@ -21,7 +21,21 @@ export function formatScoredReport(text: string, endedAt: string, context: Repor
       const interpretation = body.replace(table, "").trim().replace(/^本方面[^。]*。\s*/, "");
       return `${heading}${areaDescriptions[area]}\n\n${table.trim()}\n\n${interpretation}\n\n`;
     });
-  const field = (label: string) => context.resume.match(new RegExp(`(?:^|\\n)\\s*(?:${label})[：:]\\s*([^\\n]+)`))?.[1].trim() || "未提供";
+  const field = (label: string) => {
+    const labels = label.split("|").map(value => value.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&"));
+    const pattern = labels.join("|");
+    const inline = context.resume.match(new RegExp(`(?:^|\\n)\\s*(?:${pattern})\\s*[：:]\\s*([^\\n]+)`, "i"));
+    if (inline?.[1]?.trim()) return inline[1].trim();
+
+    // Resumes are often pasted with Markdown/plain-text section headings,
+    // for example "工作经历" on one line followed by several job entries.
+    // Read that section until the next heading or labelled resume field.
+    const section = context.resume.match(new RegExp(
+      `(?:^|\\n)\\s*(?:#{1,6}\\s*)?(?:${pattern})\\s*(?:[：:]\\s*)?\\n([\\s\\S]*?)(?=\\n\\s*(?:#{1,6}\\s+|(?:个人信息|教育经历|教育背景|项目经历|技能|证书|自我评价|联系方式|所在部门|职位|学历|专业|性别|邮箱|电子邮箱|出生日期)\\s*[：:]|$))`,
+      "i",
+    ));
+    return section?.[1]?.trim().replace(/\\n{3,}/g, "\\n\\n") || "未提供";
+  };
   const date = (value: string) => new Intl.DateTimeFormat("zh-CN", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(value));
   const elapsed = Math.max(0, Math.round((Date.parse(endedAt) - Date.parse(context.createdAt)) / 1000));
   const appendix = `## 附录
@@ -33,7 +47,7 @@ export function formatScoredReport(text: string, endedAt: string, context: Repor
 毕业院校：${field("毕业院校")}
 学历：${field("学历")}
 专业：${field("专业")}
-工作经验：${field("工作经验")}
+工作经验：${field("工作经验|工作经历|工作履历")}
 职位：${context.position}
 所在部门：${field("所在部门")}
 ### 测评过程信息
@@ -86,7 +100,7 @@ export const REPORT_SYSTEM_PROMPT = `你是岗位结构化行为访谈分析助�
 ## 详细结果
 按下面五方面依次使用三级标题：“### 动机能量方面”“### 思维决策方面”“### 情感成熟度方面”“### 人际互动方面”“### 任务执行方面”。每方面先写一段方面说明，随后一个4行 Markdown 表格，列固定为“维度｜低分特征｜访谈评分｜高分特征”。低分和高分特征使用下方给出的固定描述，多条描述使用中文分号分隔；中间评分与总体结果中该维度完全一致。表格后紧接一段综合解释本方面4个分数的实际表现和情境，引用本次候选人回答；不要增加表内解读列，不另写证据栏目。
 ## 附录
-仅有“### 测评者信息”“### 测评过程信息”“### 使用声明”。测评者信息写姓名、性别、电子邮箱、出生日期、毕业院校、学历、专业、工作经验、职位、所在部门，输入未提供则写“未提供”，不得猜测。测评过程信息写本次作答起止时间、按实际起止计算的耗时；参考时间、中断次数没有记录则写“未记录”，不编造通行证。使用声明说明只供本次工作行为理解、注意个人资料保密、访谈评分不等同于标准化量表结果。不输出品牌版权声明或额外事件附录。
+仅有“### 测评者信息”“### 测评过程信息”“### 使用声明”。测评者信息写姓名、性别、电子邮箱、出生日期、毕业院校、学历、专业、工作经验（也可从资料中的“工作经历”或“工作履历”读取）、职位、所在部门，输入未提供则写“未提供”，不得猜测。测评过程信息写本次作答起止时间、按实际起止计算的耗时；参考时间、中断次数没有记录则写“未记录”，不编造通行证。使用声明说明只供本次工作行为理解、注意个人资料保密、访谈评分不等同于标准化量表结果。不输出品牌版权声明或额外事件附录。
 ${SCORING_GUIDE}
 维度表定义：
 ${reference.dimensions.map(d => `${d.area}/${d.name}：${d.description}`).join("\n")}

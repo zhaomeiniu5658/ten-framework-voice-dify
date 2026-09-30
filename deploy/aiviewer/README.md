@@ -1,5 +1,7 @@
 # AI Interview Agent 测试服务器部署
 
+> 本页为阿里云 ECS 历史部署方案。当前腾讯云镜像仓库 + Sealos 部署请见 [Sealos 部署说明](../../docs/deployment/sealos.md)。
+
 目标 `https://aiviewer.ai.maypharm.cn`，服务器 `101.200.145.196`，代码目录 `/ten-voice-agent/AI面试`，仓库分支 `main`。
 
 ## 当前状态（2026-09-22）

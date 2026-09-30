@@ -1,0 +1,482 @@
+{
+  "tool": "sealos-log-scan",
+  "generatedAt": "2026-09-30T08:30:39.190Z",
+  "namespace": "ns-udky0j90",
+  "app": "ten-voice-ai-interview-pqehcrgg",
+  "since": "10m",
+  "tail": 300,
+  "minWindowSeconds": 60,
+  "baseline": {
+    "provided": false,
+    "generatedAt": null,
+    "elapsedSeconds": null,
+    "complete": false
+  },
+  "ok": false,
+  "dryRun": false,
+  "pods": [
+    {
+      "uid": "46bec5ae-ab73-4002-8e1a-f644a8b9ef87",
+      "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c-tm4jw",
+      "phase": "Running",
+      "ready": true,
+      "completed": false,
+      "failed": false,
+      "lifecycle": "Running",
+      "ownerKind": null,
+      "readyTransitionTime": "2026-09-30T08:29:41Z",
+      "restartCount": 0,
+      "restartDelta": 0,
+      "replaced": false,
+      "readyTransitionChanged": false,
+      "labels": {
+        "app": "ten-voice-ai-interview-pqehcrgg",
+        "pod-template-hash": "5d5c56866c"
+      },
+      "containers": [
+        {
+          "name": "ten-voice-ai-interview-pqehcrgg",
+          "type": "main",
+          "ready": true,
+          "restartCount": 0,
+          "state": {
+            "running": {
+              "startedAt": "2026-09-30T08:29:20Z"
+            }
+          },
+          "lastState": {},
+          "completionTime": null,
+          "exitCode": null,
+          "terminationReason": null,
+          "historicalCompletedInit": false,
+          "statusSignals": [],
+          "streams": [
+            {
+              "name": "current",
+              "ok": true,
+              "lineCount": 48,
+              "signals": [
+                {
+                  "id": "warning",
+                  "count": 3,
+                  "examples": [
+                    {
+                      "line": 7,
+                      "text": "[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached."
+                    },
+                    {
+                      "line": 9,
+                      "text": "[GIN-debug] [WARNING] Running in \"debug\" mode. Switch to \"release\" mode in production."
+                    },
+                    {
+                      "line": 25,
+                      "text": "[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value."
+                    }
+                  ]
+                },
+                {
+                  "id": "deprecation",
+                  "count": 1,
+                  "examples": [
+                    {
+                      "line": 35,
+                      "text": "(node:51) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead."
+                    }
+                  ]
+                },
+                {
+                  "id": "error",
+                  "count": 4,
+                  "examples": [
+                    {
+                      "line": 38,
+                      "text": "2026/09/30 08:30:16 ERROR handlerPing channel not existed channelName=agora_99d7ob requestId=7bd5faad-b30d-4a41-95f6-095cc524cbc8 service=HTTP_SERVER"
+                    },
+                    {
+                      "line": 41,
+                      "text": "2026/09/30 08:30:16 ERROR handlerPing channel not existed channelName=agora_99d7ob requestId=63850d34-a91e-462e-b4cd-03184953c9a1 service=HTTP_SERVER"
+                    },
+                    {
+                      "line": 48,
+                      "text": "2026/09/30 08:30:16 ERROR handlerPing channel not existed channelName=agora_99d7ob requestId=417af277-a671-43f3-9e5b-9ea388f3b735 service=HTTP_SERVER"
+                    },
+                    {
+                      "line": 50,
+                      "text": "2026/09/30 08:30:16 ERROR handlerPing channel not existed channelName=agora_99d7ob requestId=141c4679-e140-4778-b571-832935f87e67 service=HTTP_SERVER"
+                    }
+                  ]
+                }
+              ],
+              "error": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-4zwm4\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "7b55167e-8870-4d46-a7ff-1dd510937529",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-4zwm4\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:40Z",
+      "lastSeen": "2026-09-30T08:26:40Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-zqb5g\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "32cf79db-61ca-4394-847c-5924a388a56b",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-zqb5g\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:40Z",
+      "lastSeen": "2026-09-30T08:26:40Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-h2m62\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "9d8acab0-6a15-4089-a4f6-9b76b1662f18",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-h2m62\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:40Z",
+      "lastSeen": "2026-09-30T08:26:40Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-7k4dt\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "6993e388-f281-4cd5-92e8-dabdbb13b3a3",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-7k4dt\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:40Z",
+      "lastSeen": "2026-09-30T08:26:40Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-8nw78\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "9f7c14d9-c740-4a1b-82fa-6683b9640c0c",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-8nw78\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:40Z",
+      "lastSeen": "2026-09-30T08:26:40Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-qvchh\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "6ac13a49-35ec-4681-b4e1-f5c3a2557725",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-qvchh\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:40Z",
+      "lastSeen": "2026-09-30T08:26:40Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-ftnjp\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "b107a08e-7057-4f20-8cb3-8996a6932cda",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-ftnjp\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:40Z",
+      "lastSeen": "2026-09-30T08:26:40Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-hhkkl\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "23673a5a-a1f8-4754-a41a-b73caf4ce7be",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-hhkkl\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:41Z",
+      "lastSeen": "2026-09-30T08:26:41Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-lzzvl\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "794cd637-d892-4721-adc7-f1f50b22ea40",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-lzzvl\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 1,
+      "firstSeen": "2026-09-30T08:26:41Z",
+      "lastSeen": "2026-09-30T08:26:41Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    },
+    {
+      "fingerprint": "8408cec7-9eb0-4690-9246-1a373de3b2ff|FailedCreate|(combined from similar events): Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-9k9j5\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "uid": "504eb30a-5a15-4ab8-978a-e0efeae4693b",
+      "type": "Warning",
+      "reason": "FailedCreate",
+      "message": "(combined from similar events): Error creating: pods \"ten-voice-ai-interview-pqehcrgg-5d5c56866c-9k9j5\" is forbidden: exceeded quota: quota-ns-udky0j90, requested: pods=1, used: pods=20, limited: pods=20",
+      "count": 4,
+      "firstSeen": "2026-09-30T08:26:43Z",
+      "lastSeen": "2026-09-30T08:27:00Z",
+      "involvedObject": {
+        "kind": "ReplicaSet",
+        "name": "ten-voice-ai-interview-pqehcrgg-5d5c56866c",
+        "uid": "8408cec7-9eb0-4690-9246-1a373de3b2ff"
+      },
+      "missingSecret": null,
+      "classification": "observed",
+      "baseline": null,
+      "delta": {
+        "count": null,
+        "lastSeenAdvanced": null,
+        "restartCount": null,
+        "readyTransitionChanged": null
+      },
+      "podReady": null,
+      "readyTransitionTime": null,
+      "occurredBeforeReady": false,
+      "secret": null
+    }
+  ],
+  "eventSummary": {
+    "observed": 10,
+    "historical-transient": 0,
+    "active-failure": 0
+  },
+  "findings": [
+    {
+      "source": "log",
+      "pod": "ten-voice-ai-interview-pqehcrgg-5d5c56866c-tm4jw",
+      "container": "ten-voice-ai-interview-pqehcrgg",
+      "containerType": "main",
+      "stream": "current",
+      "signal": "deprecation",
+      "count": 1,
+      "baseline": null,
+      "delta": null,
+      "examples": [
+        {
+          "line": 35,
+          "text": "(node:51) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead."
+        }
+      ]
+    },
+    {
+      "source": "log",
+      "pod": "ten-voice-ai-interview-pqehcrgg-5d5c56866c-tm4jw",
+      "container": "ten-voice-ai-interview-pqehcrgg",
+      "containerType": "main",
+      "stream": "current",
+      "signal": "error",
+      "count": 4,
+      "baseline": null,
+      "delta": null,
+      "examples": [
+        {
+          "line": 38,
+          "text": "2026/09/30 08:30:16 ERROR handlerPing channel not existed channelName=agora_99d7ob requestId=7bd5faad-b30d-4a41-95f6-095cc524cbc8 service=HTTP_SERVER"
+        },
+        {
+          "line": 41,
+          "text": "2026/09/30 08:30:16 ERROR handlerPing channel not existed channelName=agora_99d7ob requestId=63850d34-a91e-462e-b4cd-03184953c9a1 service=HTTP_SERVER"
+        },
+        {
+          "line": 48,
+          "text": "2026/09/30 08:30:16 ERROR handlerPing channel not existed channelName=agora_99d7ob requestId=417af277-a671-43f3-9e5b-9ea388f3b735 service=HTTP_SERVER"
+        },
+        {
+          "line": 50,
+          "text": "2026/09/30 08:30:16 ERROR handlerPing channel not existed channelName=agora_99d7ob requestId=141c4679-e140-4778-b571-832935f87e67 service=HTTP_SERVER"
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "source": "log",
+      "pod": "ten-voice-ai-interview-pqehcrgg-5d5c56866c-tm4jw",
+      "container": "ten-voice-ai-interview-pqehcrgg",
+      "containerType": "main",
+      "stream": "current",
+      "signal": "warning",
+      "count": 3,
+      "delta": null,
+      "rule": "startup-warning",
+      "reason": "warning signal observed in the log stream",
+      "historicalCompletedInit": false,
+      "examples": [
+        {
+          "line": 7,
+          "text": "[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached."
+        },
+        {
+          "line": 9,
+          "text": "[GIN-debug] [WARNING] Running in \"debug\" mode. Switch to \"release\" mode in production."
+        },
+        {
+          "line": 25,
+          "text": "[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value."
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

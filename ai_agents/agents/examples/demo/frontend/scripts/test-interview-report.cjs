@@ -245,3 +245,12 @@ test('reference layout places interpretation below scores and uses actual sessio
   const area=result.split('### 动机能量方面')[1].split('### 思维决策方面')[0];
   assert.ok(area.indexOf('候选人主动设置目标')>area.indexOf('|成功愿望|'));
 });
+
+test('report appendix reads work experience from common resume labels and sections',()=>{
+  const {formatScoredReport}=require(path.join(root,'report.js'));
+  const text=scoreReport();
+  const inline=formatScoredReport(text,'2026-09-30T02:20:00Z',{candidateName:'候选人',resume:'工作经历：2020—2024 负责临床项目管理\n学历：硕士',position:'CRA',createdAt:'2026-09-30T02:00:00Z'});
+  assert.match(inline,/工作经验：2020—2024 负责临床项目管理/);
+  const section=formatScoredReport(text,'2026-09-30T02:20:00Z',{candidateName:'候选人',resume:'## 工作经历\n2020—2024 负责临床项目管理\n\n## 教育经历\n硕士',position:'CRA',createdAt:'2026-09-30T02:00:00Z'});
+  assert.match(section,/工作经验：2020—2024 负责临床项目管理/);
+});

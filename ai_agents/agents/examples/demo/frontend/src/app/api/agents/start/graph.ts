@@ -350,9 +350,10 @@ export const getGraphProperties = (
       main_control: {
         greeting: CLINICAL_PM_AGENT_GREETING,
         interrupt_on_partial: false,
-        // Give the candidate 400ms more silence before committing a turn.
-        asr_final_debounce_ms: 3000,
-        asr_short_answer_debounce_ms: 5500,
+        // Keep enough silence to merge a trailing ASR fragment while avoiding
+        // an unnecessarily long pause before the next interview question.
+        asr_final_debounce_ms: 2700,
+        asr_short_answer_debounce_ms: 5200,
         ignore_acknowledgements: true,
         report_tts_summary: "",
       },
