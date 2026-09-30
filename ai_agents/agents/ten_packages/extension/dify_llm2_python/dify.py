@@ -292,14 +292,23 @@ class DifyChatClient:
         # The transport greeting is outside Dify's conversation history.
         # Seed that context once; keep the candidate's actual answer intact.
         if self.config.opening_delivered and not self._conversation_id:
-            query_text = (
+            if self.config.interview_type == "personality":
+                query_text = (
+                    "【测试衔接上下文】前端已经播放性格测试开场白，说明了日常工作和沟通场景、"
+                    "没有标准答案、按自然习惯回答。不要再次输出开场白或测试说明，不要要求自我介绍。"
+                    "若历史中尚未提问，直接提出第一道简短的两种做法场景题；"
+                    "不要使用英文字母或编号标记选项，让用户直接说出更接近自己的做法。\n\n"
+                    f"【用户回答】\n{query_text}"
+                )
+            else:
+                query_text = (
                 "【面试衔接上下文】面试官已向候选人说过："
                 "您好，我是今天的 AI 面试官。请你先介绍一下自己。\n"
                 "下面是候选人对此的回答。请根据回答继续面试；"
                 "若已提供自我介绍，不要再次要求自我介绍，"
                 "直接针对已提供的经历提出一个具体问题。\n\n"
                 f"【候选人回答】\n{query_text}"
-            )
+                )
 
         inputs = {
             "candidate_name": self.config.candidate_name,

@@ -1,0 +1,265 @@
+{
+  "ok": true,
+  "collectionOk": true,
+  "runtimeReady": true,
+  "namespace": "ns-udky0j90",
+  "app": "ten-voice-ai-interview-pqehcrgg",
+  "resources": [
+    {
+      "type": "instances.app.sealos.io",
+      "kind": "Instance",
+      "resourceType": "Instance",
+      "name": "ten-voice-ai-interview-pqehcrgg",
+      "phase": null,
+      "ready": null,
+      "desired": null,
+      "readiness": "unknown",
+      "runtimeReady": null,
+      "completion": null,
+      "status": {
+        "phase": null,
+        "state": null,
+        "ready": false,
+        "failed": false,
+        "conditions": []
+      },
+      "objectStorageBucket": false,
+      "containersReady": null,
+      "restartCount": null,
+      "labels": {
+        "cloud.sealos.io/deploy-on-sealos": "ten-voice-ai-interview-pqehcrgg",
+        "cloud.sealos.io/owner-references": "ready"
+      },
+      "ageTimestamp": "2026-09-28T03:22:27Z",
+      "uid": "d413cfde-cf9c-4f63-bbb9-06ac3551a47f"
+    },
+    {
+      "type": "apps.app.sealos.io",
+      "kind": "App",
+      "resourceType": "App",
+      "name": "ten-voice-ai-interview-pqehcrgg",
+      "phase": null,
+      "ready": null,
+      "desired": null,
+      "readiness": "unknown",
+      "runtimeReady": null,
+      "completion": null,
+      "status": {
+        "phase": null,
+        "state": null,
+        "ready": false,
+        "failed": false,
+        "conditions": []
+      },
+      "objectStorageBucket": false,
+      "containersReady": null,
+      "restartCount": null,
+      "labels": {
+        "cloud.sealos.io/deploy-on-sealos": "ten-voice-ai-interview-pqehcrgg"
+      },
+      "ageTimestamp": "2026-09-28T03:22:27Z",
+      "uid": "b2108301-89ee-4cce-8b65-29a7fb6c45d1"
+    },
+    {
+      "type": "deployment",
+      "kind": "Deployment",
+      "resourceType": "Deployment",
+      "name": "ten-voice-ai-interview-pqehcrgg",
+      "phase": null,
+      "ready": 1,
+      "desired": 1,
+      "readiness": "1/1",
+      "runtimeReady": true,
+      "completion": null,
+      "status": {
+        "phase": null,
+        "desiredReplicas": 1,
+        "replicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1,
+        "updatedReplicas": 1,
+        "failed": 0,
+        "ready": true,
+        "conditions": [
+          {
+            "type": "Available",
+            "status": "True",
+            "reason": "MinimumReplicasAvailable",
+            "message": "Deployment has minimum availability.",
+            "lastTransitionTime": "2026-09-30T05:43:19Z"
+          },
+          {
+            "type": "Progressing",
+            "status": "True",
+            "reason": "NewReplicaSetAvailable",
+            "message": "ReplicaSet \"ten-voice-ai-interview-pqehcrgg-6c7dc9df54\" has successfully progressed.",
+            "lastTransitionTime": "2026-09-28T03:22:27Z"
+          }
+        ]
+      },
+      "objectStorageBucket": false,
+      "containersReady": null,
+      "restartCount": null,
+      "updated": 1,
+      "available": 1,
+      "labels": {
+        "app": "ten-voice-ai-interview-pqehcrgg",
+        "cloud.sealos.io/app-deploy-manager": "ten-voice-ai-interview-pqehcrgg",
+        "cloud.sealos.io/deploy-on-sealos": "ten-voice-ai-interview-pqehcrgg"
+      },
+      "ageTimestamp": "2026-09-28T03:22:27Z",
+      "uid": "0a83d761-0d45-4a85-8193-8c5c0cd1f0a4"
+    },
+    {
+      "type": "svc",
+      "kind": "Service",
+      "resourceType": "Service",
+      "name": "ten-voice-ai-interview-pqehcrgg",
+      "phase": null,
+      "ready": null,
+      "desired": null,
+      "readiness": "unknown",
+      "runtimeReady": null,
+      "completion": null,
+      "status": {
+        "phase": null,
+        "state": null,
+        "ready": false,
+        "failed": false,
+        "conditions": []
+      },
+      "objectStorageBucket": false,
+      "containersReady": null,
+      "restartCount": null,
+      "labels": {
+        "app": "ten-voice-ai-interview-pqehcrgg",
+        "cloud.sealos.io/app-deploy-manager": "ten-voice-ai-interview-pqehcrgg",
+        "cloud.sealos.io/deploy-on-sealos": "ten-voice-ai-interview-pqehcrgg"
+      },
+      "ageTimestamp": "2026-09-28T03:22:27Z",
+      "uid": "c0042086-f2fb-4476-ad74-46c82e57315f"
+    },
+    {
+      "type": "ingress",
+      "kind": "Ingress",
+      "resourceType": "Ingress",
+      "name": "ten-voice-ai-interview-pqehcrgg",
+      "phase": null,
+      "ready": null,
+      "desired": null,
+      "readiness": "unknown",
+      "runtimeReady": null,
+      "completion": null,
+      "status": {
+        "phase": null,
+        "state": null,
+        "ready": false,
+        "failed": false,
+        "conditions": []
+      },
+      "objectStorageBucket": false,
+      "containersReady": null,
+      "restartCount": null,
+      "labels": {
+        "cloud.sealos.io/app-deploy-manager": "ten-voice-ai-interview-pqehcrgg",
+        "cloud.sealos.io/app-deploy-manager-domain": "ten-voice-ai-interview-ycudzago",
+        "cloud.sealos.io/deploy-on-sealos": "ten-voice-ai-interview-pqehcrgg"
+      },
+      "ageTimestamp": "2026-09-28T03:22:27Z",
+      "uid": "e57b4633-7b1d-4a2b-834f-7e6294781f29"
+    },
+    {
+      "type": "ingress",
+      "kind": "Ingress",
+      "resourceType": "Ingress",
+      "name": "ten-voice-ai-interview-pqehcrgg-custom",
+      "phase": null,
+      "ready": null,
+      "desired": null,
+      "readiness": "unknown",
+      "runtimeReady": null,
+      "completion": null,
+      "status": {
+        "phase": null,
+        "state": null,
+        "ready": false,
+        "failed": false,
+        "conditions": []
+      },
+      "objectStorageBucket": false,
+      "containersReady": null,
+      "restartCount": null,
+      "labels": {
+        "cloud.sealos.io/app-deploy-manager": "ten-voice-ai-interview-pqehcrgg"
+      },
+      "ageTimestamp": "2026-09-29T06:11:52Z",
+      "uid": "42e6a85e-24d4-4e74-bcea-0c4a9c83409c"
+    },
+    {
+      "type": "pod",
+      "kind": "Pod",
+      "resourceType": "Pod",
+      "name": "ten-voice-ai-interview-pqehcrgg-6c7dc9df54-4cqlk",
+      "phase": "Running",
+      "ready": "True",
+      "desired": 1,
+      "readiness": "True",
+      "runtimeReady": true,
+      "completion": null,
+      "status": {
+        "phase": "Running",
+        "ready": true,
+        "completed": false,
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "reason": null,
+            "message": null,
+            "lastTransitionTime": "2026-09-30T05:45:37Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "reason": null,
+            "message": null,
+            "lastTransitionTime": "2026-09-30T05:47:07Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "reason": null,
+            "message": null,
+            "lastTransitionTime": "2026-09-30T05:47:07Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "reason": null,
+            "message": null,
+            "lastTransitionTime": "2026-09-30T05:45:37Z"
+          }
+        ]
+      },
+      "objectStorageBucket": false,
+      "containersReady": "1/1",
+      "restartCount": 0,
+      "labels": {
+        "app": "ten-voice-ai-interview-pqehcrgg",
+        "pod-template-hash": "6c7dc9df54"
+      },
+      "ageTimestamp": "2026-09-30T05:45:37Z",
+      "uid": "23f57cc3-76c3-4eb5-be9a-e499daa6c02a"
+    }
+  ],
+  "errors": [],
+  "counts": {
+    "instances.app.sealos.io": 1,
+    "apps.app.sealos.io": 1,
+    "deployment": 1,
+    "svc": 1,
+    "ingress": 2,
+    "pod": 1
+  },
+  "cleanupComplete": false
+}

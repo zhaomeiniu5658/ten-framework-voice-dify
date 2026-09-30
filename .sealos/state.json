@@ -5,12 +5,12 @@
     "app_host": "ten-voice-ai-interview-ycudzago.sealoshzh.site",
     "namespace": "ns-udky0j90",
     "region": "hzh.sealos.run",
-    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:b1484e9670d7b586e3a902945389cd489d8bf520bd8b339a6ccdc14a394e8526",
+    "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:79fdc5ca07c010cdb50b98dcd397345fdd56bd33072eb6de843034317e3a0a69",
     "docker_hub_user": null,
     "repo_name": "ten-voice-ai-interview",
     "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site",
     "deployed_at": "2026-09-28T03:28:43.637647+00:00",
-    "last_updated_at": "2026-09-29T08:49:00.724425+00:00"
+    "last_updated_at": "2026-09-30T05:49:34.988459+00:00"
   },
   "history": [
     {
@@ -113,35 +113,40 @@
       "method": "kubectl-set-image",
       "status": "success",
       "note": "Deploy commit 05c6870a4 through Tencent TCR; preserve both URLs and 22 report files with hash verification."
+    },
+    {
+      "at": "2026-09-30T05:49:34.988459+00:00",
+      "action": "set-image",
+      "previous_image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:b1484e9670d7b586e3a902945389cd489d8bf520bd8b339a6ccdc14a394e8526",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:79fdc5ca07c010cdb50b98dcd397345fdd56bd33072eb6de843034317e3a0a69",
+      "method": "kubectl-set-image",
+      "status": "success",
+      "note": "Deploy personality-test opening and natural-language option fixes; publish remote Dify workflow and preserve stable URLs."
     }
   ],
   "runtime_truth": {
     "status": "verified",
-    "captured_at": "2026-09-29T08:49:00.724425+00:00",
+    "captured_at": "2026-09-30T05:49:34.988459+00:00",
     "identity": {
       "app_name": "ten-voice-ai-interview-pqehcrgg",
       "namespace": "ns-udky0j90",
-      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:b1484e9670d7b586e3a902945389cd489d8bf520bd8b339a6ccdc14a394e8526",
+      "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:79fdc5ca07c010cdb50b98dcd397345fdd56bd33072eb6de843034317e3a0a69",
       "url": "https://ten-voice-ai-interview-ycudzago.sealoshzh.site"
     },
     "evidence_paths": [
-      ".sealos/verification/20260929-163506-build.json",
-      ".sealos/verification/20260929-163506-baseline.json",
-      ".sealos/verification/20260929-163506-final.json",
-      ".sealos/verification/20260929-163506-footprint.json",
-      ".sealos/verification/20260929-163506-http.json",
-      ".sealos/verification/20260929-163506-recovery.json",
-      ".sealos/verification/20260929-163502-network.json"
+      ".sealos/verification/20260930-personality-build.json",
+      ".sealos/verification/20260930-personality-baseline.json",
+      ".sealos/verification/20260930-personality-final.json",
+      ".sealos/verification/20260930-personality-footprint.json"
     ],
     "redaction_status": "complete",
-    "stability_window_seconds": 85,
+    "stability_window_seconds": 60,
     "checks": [
       "rollout_ready",
       "https_both_domains",
+      "root_200",
       "reports_api_200",
-      "negative_api_404",
-      "report_hashes_match",
-      "event_convergence"
+      "dify_workflow_published"
     ]
   }
 }

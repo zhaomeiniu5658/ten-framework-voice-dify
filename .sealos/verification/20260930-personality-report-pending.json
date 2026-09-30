@@ -1,0 +1,16 @@
+{
+  "at": "2026-09-30T06:11:11.642230+00:00",
+  "status": "awaiting_deployment_window",
+  "image": "ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:16c999c32f9c11e4a3743c8488e463c079859addce43f7818b861d1fd761b7b1",
+  "reason": "Two active voice connections observed; user decision on interruption pending.",
+  "checks": [
+    "typescript_pass",
+    "12_tests_pass",
+    "actual_model_report_generated",
+    "local_history_dialog_verified",
+    "downloaded_html_preserves_styles",
+    "mobile_390_no_overflow",
+    "print_preview_checked"
+  ],
+  "reports_backup": "/tmp/ten-report-style-backup/reports.tar.gz"
+}

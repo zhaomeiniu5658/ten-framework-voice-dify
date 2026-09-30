@@ -58,7 +58,7 @@ kind: Deployment
 metadata:
   name: ${{ defaults.app_name }}
   annotations:
-    originImageName: ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:b1484e9670d7b586e3a902945389cd489d8bf520bd8b339a6ccdc14a394e8526
+    originImageName: ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:79fdc5ca07c010cdb50b98dcd397345fdd56bd33072eb6de843034317e3a0a69
   labels:
     cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
     app: ${{ defaults.app_name }}
@@ -76,7 +76,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: ${{ defaults.app_name }}
-          image: ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:b1484e9670d7b586e3a902945389cd489d8bf520bd8b339a6ccdc14a394e8526
+          image: ccr.ccs.tencentyun.com/tenvoice/ten-voice-ai-interview@sha256:79fdc5ca07c010cdb50b98dcd397345fdd56bd33072eb6de843034317e3a0a69
           imagePullPolicy: IfNotPresent
           env:
             - name: AGORA_APP_ID

@@ -166,3 +166,24 @@ test('CRA report input, API metadata and old PM report regeneration agree on rol
   await store.runAnalysis(id);
   assert.equal((await store.readInterview(id)).status,'ready');
 });
+
+test('personality reports require a concrete type and preserve it in the displayed headline', async () => {
+  const layoutFile = path.join(root, 'personality-layout.js');
+  fs.writeFileSync(layoutFile, ts.transpileModule(fs.readFileSync(path.join(source, 'personality-layout.ts'), 'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText);
+  const { parsePersonalityReport } = require(layoutFile);
+  for (const code of ['INTJ','ENTP']) {
+    const id=await store.createInterview({name:'类型验收',resume:'',interviewType:'personality'});
+    await store.finishInterview(id,[{role:'assistant',text:'独立思考还是讨论？',time:1},{role:'user',text:'我通常先独立思考，再讨论',time:2}]);
+    global.fetch=async()=>({ok:true,json:async()=>({choices:[{message:{content:`# 性格测试报告\n## 类型概览\n类型倾向：${code}\n画像名称：测试画像\n## 四维偏好\n|维度|本次倾向|访谈证据|解读|\n|外向/内向|偏内向|本次回答|倾向较弱|`}}]})});
+    await store.runAnalysis(id);
+    const value=await store.readInterview(id);
+    assert.equal(value.status,'ready');
+    assert.equal(parsePersonalityReport(value.markdown).code,code);
+  }
+  const id=await store.createInterview({name:'缺失类型验收',resume:'',interviewType:'personality'});
+  await store.finishInterview(id,[{role:'user',text:'我习惯先计划再行动',time:1}]);
+  global.fetch=async()=>({ok:true,json:async()=>({choices:[{message:{content:'# 性格测试报告\n## 类型概览\n类型倾向：资料不足，类型待确认'}}]})});
+  await store.runAnalysis(id);
+  assert.equal((await store.readInterview(id)).status,'failed');
+  assert.equal((await store.listInterviews()).find(r=>r.id===id).hasReport,false);
+});

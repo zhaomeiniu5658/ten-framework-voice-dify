@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import "./InterviewReport.css";
+import { PersonalityReport } from "./PersonalityReport";
 
 type Area = "motivation" | "thinking" | "emotion" | "interaction" | "execution" | "neutral";
 
@@ -87,6 +88,7 @@ function MarkdownBody({ text }: { text: string }) {
 type ReportSection = { title: string; text: string };
 export function ReportMarkdown({ text, candidateName, createdAt, position, interviewType }: { text: string; candidateName?: string; createdAt?: string; position?: string; interviewType?: string }) {
   const personality = interviewType === "personality";
+  if (personality) return <PersonalityReport text={text} candidateName={candidateName} createdAt={createdAt} renderMarkdown={value => <MarkdownBody text={value} />} />;
   const sections: ReportSection[] = [];
   const displayPosition = position || "岗位待确认";
   const title = personality ? "性格测试报告" : `${displayPosition}面试评估报告`;
