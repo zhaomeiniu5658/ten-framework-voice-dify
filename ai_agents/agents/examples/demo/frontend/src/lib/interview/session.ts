@@ -6,6 +6,9 @@ export const UNKNOWN_CANDIDATE = "未提供姓名";
 
 // Never infer a candidate's role from an interviewer question or generated report.
 export function inferPosition(candidate?: Candidate, turns: Turn[] = []) {
+  if (candidate?.interviewType === "cra") return "CRA";
+  if (candidate?.interviewType === "clinical_pm") return "临床PM";
+  if (candidate?.interviewType === "personality") return "性格测试";
   if (candidate?.position?.trim()) return candidate.position.trim();
   const identify = (source: string) => {
     const cra = /\bCRA\b|临床监查员|clinical research associate/i.test(source);

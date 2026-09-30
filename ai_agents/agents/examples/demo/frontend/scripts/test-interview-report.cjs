@@ -8,10 +8,11 @@ const root = fs.mkdtempSync(path.join(os.tmpdir(), 'interview-test-'));
 process.env.INTERVIEW_REPORT_DIR = path.join(root, 'records');
 process.env.INTERVIEW_ANALYSIS_API_KEY = 'test-placeholder';
 const source = path.join(__dirname, '../src/lib/interview');
-for (const file of ['session', 'report', 'store']) fs.writeFileSync(path.join(root, file + '.js'), ts.transpileModule(fs.readFileSync(path.join(source, file + '.ts'), 'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS, target:ts.ScriptTarget.ES2020, esModuleInterop:true}}).outputText);
+for (const file of ['session', 'scoring', 'report', 'store']) fs.writeFileSync(path.join(root, file + '.js'), ts.transpileModule(fs.readFileSync(path.join(source, file + '.ts'), 'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS, target:ts.ScriptTarget.ES2020, esModuleInterop:true}}).outputText);
 fs.copyFileSync(path.join(source, 'reference.json'), path.join(root, 'reference.json'));
 const store = require(path.join(root, 'store.js'));
 const originalFetch = global.fetch;
+const { scoreReport } = require('./interview-score-fixture.cjs');
 after(() => {global.fetch = originalFetch; fs.rmSync(root, {recursive:true, force:true});});
 
 test('interview stays idle until finish, preserves follow-ups and final answer; idempotent analysis and retry', async () => {
@@ -27,7 +28,7 @@ test('interview stays idle until finish, preserves follow-ups and final answer; 
     assert.equal(input.transcript.length, 4);
     assert.equal(input.transcript[3].text, '最终改善结果');
     assert.equal(input.transcript[3].evidenceId, 'T4');
-    return {ok: true, json: async () => ({choices:[{finish_reason:'stop', message:{content:'# 临床PM AI面试分析报告\n\n## 总体结果\n测试'}}]})};
+    return {ok: true, json: async () => ({choices:[{finish_reason:'stop', message:{content:scoreReport({name:'张敏'})}}]})};
   };
   const id = await store.createInterview({ name: '张敏', resume: '本次临床项目经理简历' });
   await store.runAnalysis(id);
@@ -89,7 +90,7 @@ test('two candidates and concurrent finish requests keep immutable per-session e
   global.fetch = async (_url, options) => {
     const input = JSON.parse(JSON.parse(options.body).messages[1].content);
     inputs.push(input);
-    return {ok:true,json:async()=>({choices:[{message:{content:`# 临床PM面试评估报告\n${input.candidateName} [T1]`}}]})};
+    return {ok:true,json:async()=>({choices:[{message:{content:scoreReport({name:input.candidateName,citation:input.transcript.find(t=>t.role==='user').evidenceId})}}]})};
   };
   await Promise.all([store.finishInterview(a, ta),store.finishInterview(a, tb),store.finishInterview(b,tb)]);
   await Promise.all([store.runAnalysis(a),store.runAnalysis(b)]);
@@ -115,7 +116,7 @@ test('legacy demo reports are not exposed and retries use only their saved trans
   global.fetch = async (_url, options) => {
     const data=JSON.parse(JSON.parse(options.body).messages[1].content);
     assert.equal(data.resume,''); assert.equal(data.candidateName,'王芳');
-    return {ok:true,json:async()=>({choices:[{message:{content:'# 临床PM面试评估报告\n王芳协调了三个中心启动。[T1]'}}]})};
+    return {ok:true,json:async()=>({choices:[{message:{content:scoreReport({name:'王芳',citation:'T1'})}}]})};
   };
   await store.finishInterview(id,[],true); await store.runAnalysis(id);
   assert.equal((await store.readInterview(id)).status,'ready');
@@ -149,7 +150,7 @@ test('CRA report input, API metadata and old PM report regeneration agree on rol
     assert.equal(input.position,'临床 CRA');
     assert.ok(payload.messages[0].content.includes('CRA 不套用 PM'));
     assert.ok(!payload.messages[0].content.includes('标题固定为'));
-    return {ok:true,json:async()=>({choices:[{message:{content:'# 临床 CRA 面试评估报告\n## 综合评价\n中心监查 [T1]'}}]})};
+    return {ok:true,json:async()=>({choices:[{message:{content:scoreReport({citation:'T1'})}}]})};
   };
   await store.runAnalysis(id);
   const record = await store.readInterview(id);
@@ -186,4 +187,61 @@ test('personality reports require a concrete type and preserve it in the display
   await store.runAnalysis(id);
   assert.equal((await store.readInterview(id)).status,'failed');
   assert.equal((await store.listInterviews()).find(r=>r.id===id).hasReport,false);
+});
+
+
+test('score report requires candidate citations, 1–10 values and matching detail scores', () => {
+  const { validateInterviewScores, parseInterviewScore } = require(path.join(root, 'scoring.js'));
+  const turns = [{role:'assistant',text:'你的目标？',time:1},{role:'user',text:'我主动把整改关闭率目标提高到95%，每周跟进。',time:2}];
+  assert.doesNotThrow(()=>validateInterviewScores(scoreReport(),turns));
+  assert.equal(parseInterviewScore('7.4'),7.4);
+  assert.equal(parseInterviewScore('10'),10);
+  for (const score of ['0','10.1','11','7.45','未评分','70%','7 [T2]']) assert.equal(parseInterviewScore(score),null);
+  assert.throws(()=>validateInterviewScores(scoreReport({citation:'T1'}),turns),/回答引用/);
+  assert.throws(()=>validateInterviewScores(scoreReport({citation:'T99'}),turns),/回答引用/);
+  assert.throws(()=>validateInterviewScores(scoreReport({score:'0'}),turns),/评分/);
+  assert.throws(()=>validateInterviewScores(scoreReport().replace('|成功愿望|较偏低分端|7.4|','|成功愿望|较偏低分端|6.2|'),turns),/不一致/);
+  assert.throws(()=>validateInterviewScores(scoreReport().replace('## 综合评价：','## 自创板块：'),turns),/章节/);
+  assert.throws(()=>validateInterviewScores(scoreReport()+'证据不充分',turns),/格式/);
+  assert.throws(()=>validateInterviewScores(scoreReport().replace('|动机能量|成功愿望|7.4|[T2]|',''),turns),/不完整/);
+});
+
+test('old qualitative reports require reanalysis without losing candidate, resume, time or transcript', async () => {
+  const candidate = {name:'原候选人',resume:'本次CRA简历',interviewType:'cra'};
+  const id=await store.createInterview(candidate);
+  const file=path.join(root,'records',id+'.json');
+  const value=JSON.parse(fs.readFileSync(file,'utf8'));
+  Object.assign(value,{status:'ready',positionVersion:1,endedAt:'2026-09-30T08:00:00Z',markdown:'## 总体结果\n证据充分度',transcript:[{role:'user',text:'我负责CRA中心监查',time:1}]});
+  fs.writeFileSync(file,JSON.stringify(value));
+  const old=await store.readInterview(id);
+  assert.equal(old.status,'failed');
+  assert.deepEqual(old.candidate,candidate);
+  assert.deepEqual(old.transcript,value.transcript);
+  assert.equal(old.endedAt,value.endedAt);
+  assert.equal(store.publicReport(old).markdown,undefined);
+  assert.match(old.error,/评分版/);
+  await store.finishInterview(id,[],true);
+  global.fetch=async()=>({ok:true,json:async()=>({choices:[{message:{content:scoreReport({name:'原候选人',citation:'T1'})}}]})});
+  await store.runAnalysis(id);
+  assert.equal((await store.readInterview(id)).status,'ready');
+});
+
+test('selected interview type determines report position even with an empty resume or a conflicting prior role', () => {
+  const { inferPosition }=require(path.join(root,'session.js'));
+  assert.equal(inferPosition({name:'',resume:'',interviewType:'cra'}),'CRA');
+  assert.equal(inferPosition({name:'',resume:'曾任CRA',position:'CRA',interviewType:'clinical_pm'}),'临床PM');
+  assert.equal(inferPosition({name:'',resume:'',interviewType:'personality'}),'性格测试');
+});
+
+test('reference layout places interpretation below scores and uses actual session identity and Beijing time',()=>{
+  const {formatScoredReport}=require(path.join(root,'report.js'));
+  const text=scoreReport().replace('### 动机能量方面\n工作行为说明。','### 动机能量方面\n本方面说明。候选人主动设置目标。[T2]');
+  const result=formatScoredReport(text,'2026-09-30T02:20:00Z',{candidateName:'本次面试者',resume:'邮箱：test@example.com',position:'CRA',createdAt:'2026-09-30T02:00:00Z'});
+  assert.match(result,/姓名：本次面试者/);
+  assert.match(result,/职位：CRA/);
+  assert.match(result,/电子邮箱：test@example.com/);
+  assert.match(result,/10:00.*10:20/);
+  assert.match(result,/作答耗时：20分钟0秒/);
+  const area=result.split('### 动机能量方面')[1].split('### 思维决策方面')[0];
+  assert.ok(area.indexOf('候选人主动设置目标')>area.indexOf('|成功愿望|'));
 });

@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile, rename, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { analyzeInterview, type Turn } from "./report";
+import { hasInterviewScores } from "./scoring";
 import { candidateFromTurns, hasCandidateAnswer, inferPosition, REPORT_VERSION, UNKNOWN_CANDIDATE, type Candidate } from "./session";
 
 export type Interview = {
@@ -46,6 +47,11 @@ export async function readInterview(id: string): Promise<Interview | null> {
       value.status = "failed";
       value.markdown = undefined;
       value.error = "旧版报告使用固定 PM 岗位，请根据本次记录重新分析。";
+    }
+    if (value.status === "ready" && value.candidate?.interviewType !== "personality" && !hasInterviewScores(value.markdown)) {
+      value.status = "failed";
+      value.markdown = undefined;
+      value.error = "报告已改为1—10分评分版，请按本次面试记录重新分析。";
     }
     if (value.status === "analyzing" && Date.now() - Date.parse(value.updatedAt) > 240000) {
       value.status = "failed";
